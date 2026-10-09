@@ -1,0 +1,508 @@
+{
+  "env": {
+    "runner": "desktop-cli",
+    "label": "win11-intel-fam6-model189-8t-aot-sqlcipher-build",
+    "build": "aot",
+    "os": "windows",
+    "os_version": "\"Windows 11 家庭版 中文版\" 10.0 (Build 26300)",
+    "dart": "3.13.5 (stable) (Tue Sep 29 01:00:52 2026 -0700) on \"windows_x64\"",
+    "cpus": 8,
+    "utc": "2026-10-09T07:28:06.097258Z"
+  },
+  "sqlite": {
+    "sqlite_version": "3.53.4",
+    "cipher_version": "4.19.0 community",
+    "rtree_compile_option": true,
+    "cipher_available": true,
+    "cipher_provider": "openssl",
+    "cipher_provider_version": "OpenSSL 4.0.3 29 Sep 2026",
+    "rtree_query_ids": [
+      1
+    ],
+    "journal_mode": "wal",
+    "synchronous": 1,
+    "file_header_is_plain_sqlite": false,
+    "file_header_hex": "b4ac2b01222da2461e1332099a9a589b"
+  },
+  "pragmas": {
+    "journal_mode": "wal",
+    "synchronous": "NORMAL"
+  },
+  "dataset": {
+    "source": "stand-in",
+    "segments": 503,
+    "rows_cell_segment": 1725628,
+    "unique_cells": 1217666,
+    "spans": 65267,
+    "long_leg": {
+      "id": 492,
+      "label": "road trip 1,000 km",
+      "rows": 741034,
+      "spans": 16606
+    },
+    "tiles_z10": {
+      "densest": [
+        550,
+        335
+      ],
+      "long_leg": [
+        730,
+        466
+      ]
+    },
+    "expected_tile_cells": {
+      "densest": {
+        "12": 8,
+        "16": 857,
+        "20": 190566
+      },
+      "long_leg": {
+        "12": 8,
+        "16": 232,
+        "20": 33980
+      }
+    }
+  },
+  "results": [
+    {
+      "layout": "A",
+      "driver": "raw",
+      "cipher": true,
+      "leg_insert_ms": 1084,
+      "full_insert_ms": 3857,
+      "vacuum_ms": 742,
+      "size_bytes": 49037312,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 70.482,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 92.533,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 149.322,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 3.092,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 3.872,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 14.993,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 511
+    },
+    {
+      "layout": "A",
+      "driver": "drift",
+      "cipher": true,
+      "leg_insert_ms": 2316,
+      "full_insert_ms": 6689,
+      "vacuum_ms": 774,
+      "size_bytes": 49037312,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 74.665,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 97.199,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 266.414,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 3.199,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 4.193,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 35.099,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 496
+    },
+    {
+      "layout": "B",
+      "driver": "raw",
+      "cipher": true,
+      "leg_insert_ms": 678,
+      "full_insert_ms": 1567,
+      "vacuum_ms": 267,
+      "size_bytes": 17465344,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 24.679,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 32.203,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 42.866,
+            "cells": 190566
+          }
+        },
+        "densest/cell_stats": {
+          "12": {
+            "median_ms": 29.529,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 41.944,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 102.941,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 0.624,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 0.579,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 3.641,
+            "cells": 33980
+          }
+        },
+        "long_leg/cell_stats": {
+          "12": {
+            "median_ms": 3.098,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 3.272,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 15.223,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 1265
+    },
+    {
+      "layout": "B",
+      "driver": "drift",
+      "cipher": true,
+      "leg_insert_ms": 3071,
+      "full_insert_ms": 5233,
+      "vacuum_ms": 245,
+      "size_bytes": 17465344,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 41.839,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 43.246,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 58.219,
+            "cells": 190566
+          }
+        },
+        "densest/cell_stats": {
+          "12": {
+            "median_ms": 27.441,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 35.449,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 194.948,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 0.886,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 0.921,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 3.206,
+            "cells": 33980
+          }
+        },
+        "long_leg/cell_stats": {
+          "12": {
+            "median_ms": 3.942,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 3.225,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 31.729,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 3276
+    },
+    {
+      "layout": "A",
+      "driver": "raw",
+      "cipher": false,
+      "leg_insert_ms": 908,
+      "full_insert_ms": 2709,
+      "vacuum_ms": 442,
+      "size_bytes": 48046080,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 52.26,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 66.482,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 129.58,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 2.339,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 3.014,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 13.144,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 240
+    },
+    {
+      "layout": "A",
+      "driver": "drift",
+      "cipher": false,
+      "leg_insert_ms": 2141,
+      "full_insert_ms": 6062,
+      "vacuum_ms": 527,
+      "size_bytes": 48046080,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 62.108,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 82.742,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 257.648,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 2.633,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 3.341,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 40.901,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 285
+    },
+    {
+      "layout": "B",
+      "driver": "raw",
+      "cipher": false,
+      "leg_insert_ms": 631,
+      "full_insert_ms": 1469,
+      "vacuum_ms": 190,
+      "size_bytes": 17141760,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 28.635,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 30.294,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 41.202,
+            "cells": 190566
+          }
+        },
+        "densest/cell_stats": {
+          "12": {
+            "median_ms": 26.638,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 32.467,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 95.899,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 0.483,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 0.879,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 2.415,
+            "cells": 33980
+          }
+        },
+        "long_leg/cell_stats": {
+          "12": {
+            "median_ms": 2.301,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 3.09,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 15.756,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 1231
+    },
+    {
+      "layout": "B",
+      "driver": "drift",
+      "cipher": false,
+      "leg_insert_ms": 2892,
+      "full_insert_ms": 5442,
+      "vacuum_ms": 188,
+      "size_bytes": 17141760,
+      "wal_bytes_after_checkpoint": 0,
+      "tile_query": {
+        "densest": {
+          "12": {
+            "median_ms": 49.11,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 53.789,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 59.11,
+            "cells": 190566
+          }
+        },
+        "densest/cell_stats": {
+          "12": {
+            "median_ms": 24.196,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 32.996,
+            "cells": 857
+          },
+          "20": {
+            "median_ms": 221.538,
+            "cells": 190566
+          }
+        },
+        "long_leg": {
+          "12": {
+            "median_ms": 1.147,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 1.499,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 3.573,
+            "cells": 33980
+          }
+        },
+        "long_leg/cell_stats": {
+          "12": {
+            "median_ms": 3.271,
+            "cells": 8
+          },
+          "16": {
+            "median_ms": 3.312,
+            "cells": 232
+          },
+          "20": {
+            "median_ms": 36.81,
+            "cells": 33980
+          }
+        }
+      },
+      "delete_leg_ms": 3494
+    }
+  ]
+}
