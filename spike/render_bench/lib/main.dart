@@ -13,6 +13,8 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'src/cells.dart';
+import 'src/coverage_db.dart';
+import 'src/coverage_source.dart';
 import 'src/fog.dart';
 import 'src/pan.dart';
 import 'src/standin.dart';
@@ -35,15 +37,30 @@ class BenchArgs {
       passes = (m['passes'] as int?) ?? 3,
       warmup = m['warmup'] != false,
       fog = m['fog'] != false,
+      zoom = ((m['zoom'] as num?) ?? panZoom).toDouble(),
+      source = m['source'] == 'memory' ? 'memory' : 'db',
+      layout = Layout.parse(m['layout'] as String?),
+      rebuild = m['rebuild'] == true,
       dataset = (m['dataset'] as String?) ?? 'dataset.cells.bin',
+      segcells = (m['segcells'] as String?) ?? 'dataset.segcells.bin',
       label = (m['label'] as String?) ?? '';
 
   final FogStrategy strategy;
-  final bool texture, autorun, warmup, fog;
+  final bool texture, autorun, warmup, fog, rebuild;
   final int detail, passes;
-  final String dataset, label;
+  final double zoom;
+
+  /// `db`: the fog reads the SQLCipher database built from [segcells] in
+  /// [layout] (the default). `memory`: W1's in-memory rollups of [dataset].
+  final String source;
+  final Layout layout;
+  final String dataset, segcells, label;
 
   Map<String, Object> toJson() => {
+    'zoom': zoom,
+    'source': source,
+    'layout': layout.label,
+    'segcells': segcells,
     'strategy': strategy.name,
     'texture': texture,
     'platform_view': texture
@@ -67,6 +84,10 @@ Future<void> main() async {
     'detail': int.fromEnvironment('RB_DETAIL', defaultValue: 6),
     'passes': int.fromEnvironment('RB_PASSES', defaultValue: 3),
     'fog': bool.fromEnvironment('RB_FOG', defaultValue: true),
+    'zoom': int.fromEnvironment('RB_ZOOM', defaultValue: 10),
+    'source': String.fromEnvironment('RB_SOURCE', defaultValue: 'db'),
+    'layout': String.fromEnvironment('RB_LAYOUT', defaultValue: 'B'),
+    'rebuild': bool.fromEnvironment('RB_REBUILD'),
     'label': String.fromEnvironment('RB_LABEL'),
   };
   if (!kIsWeb && Platform.isAndroid) {
@@ -97,12 +118,18 @@ class SpikeApp extends StatelessWidget {
 }
 
 class _Loaded {
-  _Loaded(this.index, this.info);
+  _Loaded(this.source, this.info);
+  final CoverageSource source;
+  final Map<String, Object> info;
+}
+
+class _Memory {
+  _Memory(this.index, this.info);
   final CoverageIndex index;
   final Map<String, Object> info;
 }
 
-_Loaded _load(String dir, String name) {
+_Memory _load(String dir, String name) {
   final sw = Stopwatch()..start();
   final file = File('$dir/$name');
   final Int64List z20;
@@ -125,12 +152,67 @@ _Loaded _load(String dir, String name) {
       for (final l in [8, 10, 12, 14, 16, 18, 20]) '$l': index.count(l),
     },
   });
-  return _Loaded(index, info);
+  return _Memory(index, info);
 }
 
-// Top-level so the closure captures only the two strings, not a State.
-Future<_Loaded> _loadInIsolate(String dir, String name) =>
+// Top-level so the closures capture only plain values, not a State.
+Future<_Memory> _loadInIsolate(String dir, String name) =>
     Isolate.run(() => _load(dir, name));
+
+Future<Map<String, Object>> _ensureDbInIsolate(
+  String segcells,
+  String db,
+  String layout,
+  bool rebuild,
+) => Isolate.run(
+  () => ensureCoverageDb(
+    segcellsPath: segcells,
+    dbPath: db,
+    layout: Layout.parse(layout),
+    rebuild: rebuild,
+  ),
+);
+
+/// Opens the fog's coverage source. The DB build (first run, or a changed
+/// dataset) happens here, before any pass.
+Future<_Loaded> _openSource(String dir, BenchArgs args) async {
+  if (args.source == 'memory') {
+    final m = await _loadInIsolate(dir, args.dataset);
+    return _Loaded(MemorySource(m.index), {...m.info, 'coverage': 'memory'});
+  }
+  final segcells = '$dir/${args.segcells}';
+  if (!File(segcells).existsSync()) {
+    throw StateError('no $segcells; push dataset.segcells.bin (MEASURE.md)');
+  }
+  final dbPath = '$dir/rb_coverage_${args.layout.label}.db';
+  final sw = Stopwatch()..start();
+  final build = await _ensureDbInIsolate(
+    segcells,
+    dbPath,
+    args.layout.label,
+    args.rebuild,
+  );
+  final ensureMs = sw.elapsedMilliseconds;
+  final source = await DbSource.open(dbPath, args.layout);
+  final db = {
+    ...source.info,
+    'path': dbPath,
+    'bytes': File(dbPath).lengthSync(),
+    'ensure_ms': ensureMs,
+    'open_ms': sw.elapsedMilliseconds - ensureMs,
+    'build': build,
+  };
+  final segJson = File('$dir/${args.segcells.replaceAll('.bin', '.json')}');
+  return _Loaded(source, {
+    'coverage': 'db',
+    'source': segcells,
+    'z20_cells': ?build['z20_cells'],
+    if (segJson.existsSync())
+      'segcells_meta': (jsonDecode(segJson.readAsStringSync()) as Map)
+          .cast<String, Object>(),
+    'db': db,
+  });
+}
 
 Future<Directory> filesDir() async {
   if (Platform.isAndroid) {
@@ -175,10 +257,10 @@ class _BenchPageState extends State<BenchPage>
   FogBuilder? _fog;
   String _status = 'loading cells…';
 
-  ({double lat, double lon, double zoom}) _camera = (
+  late ({double lat, double lon, double zoom}) _camera = (
     lat: panWaypoints.first.lat,
     lon: panWaypoints.first.lon,
-    zoom: panZoom,
+    zoom: widget.args.zoom,
   );
   Set<TileKey> _shown = {};
   bool _fogBusy = false;
@@ -205,6 +287,7 @@ class _BenchPageState extends State<BenchPage>
   void dispose() {
     SchedulerBinding.instance.removeTimingsCallback(_onTimings);
     _ticker.dispose();
+    unawaited(_data?.source.close());
     super.dispose();
   }
 
@@ -214,14 +297,31 @@ class _BenchPageState extends State<BenchPage>
 
   Future<void> _loadCells() async {
     final dir = (await filesDir()).path;
-    final name = widget.args.dataset;
-    final loaded = await _loadInIsolate(dir, name);
+    final _Loaded loaded;
+    try {
+      loaded = await _openSource(dir, widget.args);
+    } catch (e) {
+      debugPrint('RENDER_BENCH_ERROR $e');
+      if (mounted) setState(() => _status = 'error: $e');
+      return;
+    }
+    // The run log's proof that coverage comes from SQLCipher: cipher_version
+    // read back from the connection the fog queries.
+    if (loaded.info['db'] case final Map<String, Object> db) {
+      debugPrint('RENDER_BENCH_DB ${jsonEncode(db)}');
+    }
     debugPrint('RENDER_BENCH_DATA ${jsonEncode(loaded.info)}');
-    if (!mounted) return;
+    if (!mounted) {
+      unawaited(loaded.source.close());
+      return;
+    }
     setState(() {
       _data = loaded;
-      _fog = FogBuilder(loaded.index, detail: _detail);
-      _status = '${loaded.info['z20_cells']} z20 cells';
+      _fog = FogBuilder(loaded.source, detail: _detail);
+      final db = loaded.info['db'] as Map<String, Object>?;
+      _status =
+          '${loaded.info['z20_cells'] ?? '?'} z20 cells · '
+          '${db == null ? 'memory' : 'SQLCipher ${db['cipher_version']} layout ${db['layout']}'}';
     });
     await _refreshFog(force: true, measureEncode: true);
     _maybeAutorun();
@@ -292,7 +392,15 @@ class _BenchPageState extends State<BenchPage>
       height: size.height,
     );
     final stats = FogStats();
-    final geojson = fog.build(_strategy, tiles, stats);
+    final Map<String, Object> geojson;
+    try {
+      geojson = await fog.build(_strategy, tiles, stats);
+    } catch (e) {
+      // measure.dart fails the run on this line.
+      debugPrint('RENDER_BENCH_ERROR fog: $e');
+      _fogBusy = false;
+      rethrow;
+    }
     double? encodeMs;
     int? bytes;
     if (measureEncode) {
@@ -337,8 +445,8 @@ class _BenchPageState extends State<BenchPage>
     if (_passFirstVsyncUs == 0) _passFirstVsyncUs = stamp.inMicroseconds;
     _passLastVsyncUs = stamp.inMicroseconds;
     final t = elapsed.inMicroseconds / panDuration.inMicroseconds;
-    final w = panAt(t);
-    _camera = (lat: w.lat, lon: w.lon, zoom: panZoom);
+    final w = panAt(t, zoom: widget.args.zoom);
+    _camera = (lat: w.lat, lon: w.lon, zoom: widget.args.zoom);
     if (_moveInFlight) {
       _movesSkipped++;
     } else {
@@ -347,7 +455,10 @@ class _BenchPageState extends State<BenchPage>
       _map!
           .moveCamera(
             CameraUpdate.newCameraPosition(
-              CameraPosition(target: LatLng(w.lat, w.lon), zoom: panZoom),
+              CameraPosition(
+                target: LatLng(w.lat, w.lon),
+                zoom: widget.args.zoom,
+              ),
             ),
           )
           .whenComplete(() => _moveInFlight = false);
@@ -361,10 +472,10 @@ class _BenchPageState extends State<BenchPage>
 
   Future<void> _goToStart() async {
     final w = panWaypoints.first;
-    _camera = (lat: w.lat, lon: w.lon, zoom: panZoom);
+    _camera = (lat: w.lat, lon: w.lon, zoom: widget.args.zoom);
     await _map!.moveCamera(
       CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(w.lat, w.lon), zoom: panZoom),
+        CameraPosition(target: LatLng(w.lat, w.lon), zoom: widget.args.zoom),
       ),
     );
     await _refreshFog(force: true);
@@ -414,6 +525,12 @@ class _BenchPageState extends State<BenchPage>
       ]),
       'fog_updates': {
         'n': _passUpdates.length,
+        'queried_tiles': _passUpdates.fold<int>(
+          0,
+          (a, u) => a + u.stats.queried,
+        ),
+        'query': durationStats([for (final u in _passUpdates) u.stats.queryMs]),
+        'wait': durationStats([for (final u in _passUpdates) u.stats.waitMs]),
         'build': durationStats([for (final u in _passUpdates) u.stats.buildMs]),
         'set': durationStats([for (final u in _passUpdates) u.setMs]),
         'max_rects': _passUpdates.fold<int>(
@@ -451,6 +568,12 @@ class _BenchPageState extends State<BenchPage>
           : kReleaseMode
           ? 'release'
           : 'debug',
+      'pan': {
+        'zoom': widget.args.zoom,
+        'path_fraction': pathFraction(widget.args.zoom),
+        'path_length_z10_tiles': panLengthTilesZ10,
+        'duration_s': panDuration.inSeconds,
+      },
       'data': _data!.info,
       'idle_fog_update': ?_lastUpdate?.toJson(),
       'passes': passes,
@@ -496,7 +619,7 @@ class _BenchPageState extends State<BenchPage>
               styleString: styleUrl,
               initialCameraPosition: CameraPosition(
                 target: LatLng(panWaypoints.first.lat, panWaypoints.first.lon),
-                zoom: panZoom,
+                zoom: widget.args.zoom,
               ),
               onMapCreated: (c) => _map = c,
               onStyleLoadedCallback: () => unawaited(_onStyleLoaded()),
