@@ -1,0 +1,57 @@
+{
+  "seed": 42,
+  "years": 5,
+  "walk_scale": 1.0,
+  "level": 20,
+  "segments": 2982,
+  "points": 115312,
+  "unique_cells": 1169242,
+  "rows": 9714696,
+  "segment_spans": 458360,
+  "union_spans": 36590,
+  "by_category": {
+    "home": {
+      "segments": 2896,
+      "rows": 4933400,
+      "spans": 318076,
+      "unique_cells": 148042
+    },
+    "flight": {
+      "segments": 12,
+      "rows": 23800,
+      "spans": 856,
+      "unique_cells": 9507
+    },
+    "stay": {
+      "segments": 64,
+      "rows": 136579,
+      "spans": 9033,
+      "unique_cells": 112290
+    },
+    "road": {
+      "segments": 10,
+      "rows": 4620917,
+      "spans": 130395,
+      "unique_cells": 907267
+    }
+  },
+  "longest_line_leg": {
+    "segment": 564,
+    "label": "road: CDMX → Nuevo Laredo 2021-12-18",
+    "km": 1033,
+    "buffer_m": 500.0,
+    "rows": 899508,
+    "spans": 25599
+  },
+  "sha256": {
+    "trace": "c7d51e69bd57c92bd8f590f1965cf04ecbf47f2e54a85b556cb8e2e587ea4742",
+    "cells": "4a893df6986893239134cc8e78753cce7fa4eebfc5ee7e548f44c2899e68c1c2",
+    "segcells": "22739288fc0633530a2436c0f1573de9d931984e27daceb1e0119fb09419b7c2"
+  },
+  "ms": {
+    "generate_trace": 96,
+    "write_trace": 475,
+    "reveal": 2524,
+    "reveal_and_write": 9167
+  }
+}
