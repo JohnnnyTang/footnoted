@@ -102,7 +102,7 @@ W0 ─▶ W1 (4 parallel) ─▶ W2 (measure) ─▶ G1 ─▶ W3 (4 parallel) �
 
 ## Current status
 
-- **2026-10-08. W0 / S01-00 done.** The handoff was read and the plan written (this directory plus kickoff docs for Stages 2–6). Owner rulings D-001…D-005 were obtained. The repo `JohnnnyTang/footnoted` was created (public, MPL-2.0). Flutter 3.47.7 and the Android SDK were installed on the dev machine. The workspace was scaffolded (`app/`, `packages/footnoted_geo`, `packages/footnoted_data`), along with CI, the Claude Code configuration (skills, hooks, plugins, Dart MCP) and the docs index. See [W0-bootstrap.md](W0-bootstrap.md).
+- **2026-10-08. W0 / S01-00 done.** The handoff was read and the plan written (this directory plus kickoff docs for Stages 2–6). Owner rulings D-001…D-005 were obtained. The repo `JohnnnyTang/footnoted` was created (public, MPL-2.0). Flutter 3.47.7 and the Android SDK were installed on the dev machine. The workspace was scaffolded (`app/`, `packages/footnoted_geo`, `packages/footnoted_data`), along with CI, the Claude Code configuration (skills, hooks, plugins, Dart MCP) and the docs index. See [W0-bootstrap.md](W0-bootstrap.md). Local `flutter build apk --debug` is ✓ and the app runs on the AVD `fn_api36`. **The first CI run is green** on `21670f0`, in [run 37882963659](https://github.com/JohnnnyTang/footnoted/actions/runs/37882963659): checks 1m25s, Android build 3m26s, iOS `--no-codesign` 3m12s.
 - **Next:** the W1 kickoff (`orchestrate-wave` skill): cut `stage/01-foundation`, implement the W1 seams (`spike/FORMAT.md`, spike package skeletons), then dispatch S01-10…13 in parallel.
 
 ## Blockers that still bind
