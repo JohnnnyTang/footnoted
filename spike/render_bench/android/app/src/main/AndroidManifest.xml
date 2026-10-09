@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- OpenFreeMap style, tiles, glyphs and sprites (tiles.openfreemap.org only). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="render_bench"
         android:name="${applicationName}"

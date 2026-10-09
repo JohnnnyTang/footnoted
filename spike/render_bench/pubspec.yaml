@@ -9,9 +9,12 @@ environment:
   sdk: ^3.13.5
 
 dependencies:
+  crypto: ^3.0.7
   flutter:
     sdk: flutter
   footnoted_geo: any
+  maplibre_gl: ^0.27.1
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:
