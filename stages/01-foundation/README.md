@@ -1,7 +1,7 @@
 # Stage 1 — Foundation (M0 spike + M1 foundation)
 
 **Stage opened:** 2026-10-08 (planning). **Branch:** `stage/01-foundation`, cut from `main` by the W1 kickoff.
-**State:** `ACTIVE`. W0 (planning + bootstrap) is done. **W1 is dispatched.**
+**State:** `ACTIVE`. W0 and W1 (spike harness) are merged. **W2 waits on the owner's Android phone.**
 **Milestones:** M0 (performance spike, throwaway harness) + M1 (foundation), per [`HANDOFF.md`](../../docs/HANDOFF.md#milestones) and D-002.
 **Backlog:** [`VERIFICATION_BACKLOG.md`](VERIFICATION_BACKLOG.md) (`S01-V###`, `S01-E#`).
 **Waves:** [W0](W0-bootstrap.md) · [W1](W1-spike.md) · [W2](W2-measure-and-decide.md) · [W3](W3-building-blocks.md) · [W4](W4-pipeline-and-fog.md) · [W5](W5-integrate-and-verify.md)
@@ -103,11 +103,17 @@ W0 ─▶ W1 (4 parallel) ─▶ W2 (measure) ─▶ G1 ─▶ W3 (4 parallel) �
 ## Current status
 
 - **2026-10-08. W0 / S01-00 done.** The handoff was read and the plan written (this directory plus kickoff docs for Stages 2–6). Owner rulings D-001…D-005 were obtained. The repo `JohnnnyTang/footnoted` was created (public, MPL-2.0). Flutter 3.47.7 and the Android SDK were installed on the dev machine. The workspace was scaffolded (`app/`, `packages/footnoted_geo`, `packages/footnoted_data`), along with CI, the Claude Code configuration (skills, hooks, plugins, Dart MCP) and the docs index. See [W0-bootstrap.md](W0-bootstrap.md). Local `flutter build apk --debug` is ✓ and the app runs on the AVD `fn_api36`. **The first CI run is green** on `21670f0`, in [run 37882963659](https://github.com/JohnnnyTang/footnoted/actions/runs/37882963659): checks 1m25s, Android build 3m26s, iOS `--no-codesign` 3m12s.
-- **2026-10-09. W1 kickoff done.** `stage/01-foundation` cut from `main` @ `042f23f`; seams in `d25be78` (`spike/FORMAT.md`, four spike package skeletons, `footnoted_geo` src stubs, CI for spike + session branches). Baseline 11 tests green, analyze and format clean, check_deps 61 packages. See [the kickoff note](notes/2026-10-09-W1-kickoff.md). S01-10, S01-11, S01-12, S01-13 dispatched in parallel.
-- **Next:** the W1 close (`orchestrate-wave` skill): review and merge S01-10 → S01-11 → S01-13 → S01-12, whole suite on the merged tree, backlog, close note.
+- **2026-10-09. W1 kickoff done.** `stage/01-foundation` cut from `main` @ `042f23f`; seams in `d25be78` (`spike/FORMAT.md`, four spike package skeletons, `footnoted_geo` src stubs, CI for spike + session branches). Baseline 11 tests green, analyze and format clean, check_deps 61 packages. See [the kickoff note](notes/2026-10-09-W1-kickoff.md). S01-10, S01-11, S01-12, S01-13 dispatched in parallel. **Correction of record (2026-10-09):** the baseline was 10 tests, not 11 (see the kickoff note).
+- **2026-10-09. W1 merged.** [Close note](notes/2026-10-09-W1-close.md). Suite on the merged tree: 85 tests green (+75 on 10), analyze/format clean, check_deps 115 packages. **No exit criterion is decided yet**; every frame-rate and storage number is emulator or desktop.
+  - **S01-10** ✓ seed-42 five-year dataset, 1.17 M unique z20 cells, 9.71 M (cell, segment) rows vs 458 k spans, deterministic; `footnoted_geo` tile math, supercover rasteriser, per-row disk dilation (+39 tests). Road trips reuse one corridor to hold the ≈1 M target.
+  - **S01-11** ✓ with caveats: SQLCipher via `sqlite3` build hooks (root-pubspec setting, S01-V005); spans 2.8× smaller and 2–4× faster to query than per-cell rows, delete slower; Drift typed batch 1.7–4.5× slower than raw. Stand-in data; SQLCipher proven from a standalone copy; iOS SQLCipher not compiled yet.
+  - **S01-12** ✓ emulator only: recommends fog (a) holes d6 on GLSurfaceView/VD; `MEASURE.md` runbook; needs JDK 21 and a GMS exclusion (S01-V012, S01-V013).
+  - **S01-13** ✓ recommends quadkey z20 with an exact dilation radius over H3 and z21.
+- **Next:** the W2 kickoff (`orchestrate-wave`): the owner connects the Android phone (S01-E1) and confirms the Mac + iPhone (S01-E2); rule on the root SQLCipher setting (S01-V005); then S01-20.
 
 ## Blockers that still bind
 
-- `S01-E1` — **Owner's Android test phone**: the model and USB debugging are needed by W2 (S01-20). Not blocking W1.
+- `S01-E1` — **Owner's Android test phone**: the model and USB debugging are needed by W2 (S01-20). **Blocks the W2 kickoff.**
+- `S01-V005` — **Owner ruling:** add the SQLCipher `hooks: user_defines` setting to the root `pubspec.yaml` at the W2 kickoff (workspace-wide), or hold it until G1.
 - `S01-E2` — **Owner's Mac + older iPhone** with Xcode, for S01-21 / S01-51. Not blocking W1.
 - D-007 (default buffer) awaits owner confirmation at the W3 kickoff.

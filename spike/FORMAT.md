@@ -94,3 +94,5 @@ Records are ordered by `segment_id` ascending. Cells inside a record are sorted 
 
 - The generator writes to the `--out` directory it is given; the convention is `spike/out/` (ignored by git).
 - Before S01-10 merges, sibling spikes may build **stand-in** dumps in their own `out/` directory, in exactly these formats with `source_trace: null`. W2 swaps in the real dataset.
+
+**Amended at the W1 close (2026-10-09), from S01-10:** levels other than 20 are written with a level infix, `dataset.z<L>.cells.bin` / `.segcells.bin` (z20 keeps the plain `dataset.*` names), and each level also writes a summary `dataset[.z<L>].stats.json` (counts, spans, timings). Readers take the level from the `.json` metadata, never from the file name.

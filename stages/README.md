@@ -14,7 +14,7 @@ Status lives in exactly two places: this table and the stage README's **Current 
 
 | # | Stage | Milestone | State | What still binds |
 | --- | --- | --- | --- | --- |
-| 01 | [Foundation](01-foundation/README.md) | M0 spike + M1 foundation | `ACTIVE`: W0 done, **W1 dispatched** (S01-10…13 running) | W1 close; owner's Android device for W2 |
+| 01 | [Foundation](01-foundation/README.md) | M0 spike + M1 foundation | `ACTIVE`: W0, **W1 merged** (spike harness; emulator numbers only) | W2 kickoff: owner's Android phone (S01-E1), Mac + iPhone (S01-E2), SQLCipher root setting (S01-V005) |
 | 02 | [Import mode](02-import/README.md) | M2 | `KICKOFF`: scope only | Stage 1 exit |
 | 03 | [Live recording](03-live-recording/README.md) | M3 | `KICKOFF`: scope only | Stage 2 exit; real OEM devices |
 | 04 | [Trips and places](04-trips-places/README.md) | M4 | `KICKOFF`: scope only | Stage 2 exit (Stage 3 not required) |
