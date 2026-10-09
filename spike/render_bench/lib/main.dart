@@ -119,6 +119,10 @@ _Loaded _load(String dir, String name) {
   return _Loaded(index, info);
 }
 
+// Top-level so the closure captures only the two strings, not a State.
+Future<_Loaded> _loadInIsolate(String dir, String name) =>
+    Isolate.run(() => _load(dir, name));
+
 Future<Directory> filesDir() async {
   if (Platform.isAndroid) {
     final ext = await getExternalStorageDirectory();
@@ -202,7 +206,7 @@ class _BenchPageState extends State<BenchPage>
   Future<void> _loadCells() async {
     final dir = (await filesDir()).path;
     final name = widget.args.dataset;
-    final loaded = await Isolate.run(() => _load(dir, name));
+    final loaded = await _loadInIsolate(dir, name);
     debugPrint('RENDER_BENCH_DATA ${jsonEncode(loaded.info)}');
     if (!mounted) return;
     setState(() {
