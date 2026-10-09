@@ -20,6 +20,34 @@ Future<String> adb(List<String> args) async {
   return r.stdout as String;
 }
 
+// Layers of this app that receive buffers. On Android 16 `--list` wraps each
+// name as `RequestedLayerState{<name> parentId=…}`; `--latency` wants <name>.
+// Container layers (bounds, background, input sink, splash, leashes) never get
+// buffers, so they are skipped to keep each poll well inside the 127-frame
+// history SurfaceFlinger keeps per layer.
+Future<Set<String>> bufferLayers() async {
+  final out = await adb(['shell', 'dumpsys', 'SurfaceFlinger', '--list']);
+  final names = <String>{};
+  for (var l in out.split('\n')) {
+    l = l.trim();
+    if (!l.contains('render_bench')) continue;
+    l = l
+        .replaceFirst(RegExp(r'^RequestedLayerState\{'), '')
+        .replaceFirst(
+          RegExp(r' (parentId|relativeParentId|z|layerStack)=.*$'),
+          '',
+        )
+        .replaceFirst(RegExp(r'\}$'), '');
+    if (RegExp(
+      r'Background for|Bounds for|InputSink|Splash|leash|ActivityRecord',
+    ).hasMatch(l)) {
+      continue;
+    }
+    names.add(l);
+  }
+  return names;
+}
+
 String opt(List<String> args, String name, String fallback) {
   final i = args.indexOf('--$name');
   return i >= 0 && i + 1 < args.length ? args[i + 1] : fallback;
@@ -79,13 +107,11 @@ Future<void> main(List<String> args) async {
   final appPasses = <int, Map<String, Object?>>{};
   final deadline = DateTime.now().add(const Duration(minutes: 6));
 
+  var layers = <String>{};
+  var polls = 0;
   while (donePath == null && DateTime.now().isBefore(deadline)) {
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    final layers = (await adb(['shell', 'dumpsys', 'SurfaceFlinger', '--list']))
-        .split('\n')
-        .map((l) => l.trim())
-        .where((l) => l.contains(pkg) || l.contains('flutter-vd'))
-        .toSet();
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    if (polls++ % 6 == 0) layers = await bufferLayers();
     for (final layer in layers) {
       final out = await adb([
         'shell',
@@ -175,14 +201,8 @@ Future<void> main(List<String> args) async {
     'refresh_period_ns': refresh,
     'gfxinfo_summary': gfx
         .split('\n')
-        .where(
-          (l) =>
-              l.startsWith('Total frames') ||
-              l.startsWith('Janky') ||
-              l.contains('percentile') ||
-              l.startsWith('Number '),
-        )
         .map((l) => l.trim())
+        .where((l) => l.startsWith('Total frames') || l.startsWith('Janky'))
         .toList(),
     'passes': perPass,
   };

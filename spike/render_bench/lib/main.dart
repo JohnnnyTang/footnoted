@@ -60,9 +60,18 @@ class BenchArgs {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Map<Object?, Object?> raw = const {};
+  // iOS (and any platform): `--dart-define=RB_AUTORUN=true` and friends.
+  Map<Object?, Object?> raw = const {
+    'autorun': bool.fromEnvironment('RB_AUTORUN'),
+    'strategy': String.fromEnvironment('RB_STRATEGY', defaultValue: 'holes'),
+    'detail': int.fromEnvironment('RB_DETAIL', defaultValue: 6),
+    'passes': int.fromEnvironment('RB_PASSES', defaultValue: 3),
+    'fog': bool.fromEnvironment('RB_FOG', defaultValue: true),
+    'label': String.fromEnvironment('RB_LABEL'),
+  };
   if (!kIsWeb && Platform.isAndroid) {
-    raw = await _launch.invokeMapMethod<Object?, Object?>('args') ?? const {};
+    final extras = await _launch.invokeMapMethod<Object?, Object?>('args');
+    if (extras != null && extras.isNotEmpty) raw = extras;
   }
   final args = BenchArgs(raw);
   MapLibreMap.useHybridComposition = args.texture;
