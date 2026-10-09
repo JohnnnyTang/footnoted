@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,23 @@ const _autorun = bool.fromEnvironment('AUTORUN', defaultValue: true);
 const _tiny = bool.fromEnvironment('TINY');
 
 void main() => runApp(const SpikeApp());
+
+Future<String> _benchJob((String?, String) args) async {
+  final (input, work) = args;
+  final ds = input != null && File(input).existsSync()
+      ? readSegcells(input)
+      : buildStandIn(_tiny ? const StandInSpec.tiny() : const StandInSpec());
+  final r = await runBench(
+    ds,
+    work,
+    log: (l) => debugPrint('BENCH $l'),
+    env: {
+      'runner': 'flutter-app',
+      'build': kReleaseMode ? 'release' : (kProfileMode ? 'profile' : 'debug'),
+    },
+  );
+  return const JsonEncoder.withIndent('  ').convert(r);
+}
 
 class SpikeApp extends StatefulWidget {
   const SpikeApp({super.key, this.autorun = _autorun});
@@ -57,25 +73,7 @@ class _SpikeAppState extends State<SpikeApp> {
         'bench',
       );
       _log('work dir $work');
-      final json = await Isolate.run(() async {
-        final ds = input != null && File(input).existsSync()
-            ? readSegcells(input)
-            : buildStandIn(
-                _tiny ? const StandInSpec.tiny() : const StandInSpec(),
-              );
-        final r = await runBench(
-          ds,
-          work,
-          log: (l) => debugPrint('BENCH $l'),
-          env: {
-            'runner': 'flutter-app',
-            'build': kReleaseMode
-                ? 'release'
-                : (kProfileMode ? 'profile' : 'debug'),
-          },
-        );
-        return const JsonEncoder.withIndent('  ').convert(r);
-      });
+      final json = await compute(_benchJob, (input, work));
       for (final dir in [docs, ?ext]) {
         File(p.join(dir, 'storage_bench_result.json')).writeAsStringSync(json);
       }
