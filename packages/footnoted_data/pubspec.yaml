@@ -1,0 +1,14 @@
+name: footnoted_data
+description: FootNoted's encrypted on-device database (Drift + SQLCipher) - schema, migrations, reveal pipeline.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  footnoted_geo: any
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

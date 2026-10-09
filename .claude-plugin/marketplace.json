@@ -1,0 +1,27 @@
+{
+  "name": "footnoted-tools",
+  "description": "Claude Code plugins for working on FootNoted.",
+  "owner": {
+    "name": "JohnnnyTang"
+  },
+  "plugins": [
+    {
+      "name": "dart-lsp",
+      "description": "Dart/Flutter language server (dart language-server) for code intelligence in .dart files.",
+      "version": "1.0.0",
+      "source": "./tool/claude-plugins/dart-lsp",
+      "category": "development",
+      "strict": false,
+      "lspServers": {
+        "dart": {
+          "command": "dart",
+          "args": ["language-server", "--protocol=lsp", "--client-id=claude-code"],
+          "extensionToLanguage": {
+            ".dart": "dart"
+          },
+          "startupTimeout": 120000
+        }
+      }
+    }
+  ]
+}

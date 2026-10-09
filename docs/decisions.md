@@ -1,0 +1,20 @@
+# Decision log
+
+**Status:** current · **Last verified:** 2026-10-08 · **Owner:** project owner + orchestrator
+
+This log holds decisions taken **after** [`HANDOFF.md`](HANDOFF.md) was written. Each row says who decided, when, how firm it is (same tags as the handoff: **Decided** / **Proposed**), and what would reopen it. Where a decision settles a handoff item, the handoff is updated in place and points here.
+
+Rows are append-only. To change a decision, add a new row that supersedes the old one and strike the old one through. Do not edit it silently.
+
+| ID | Decision | Firmness | Decided by / date | Reopens if |
+| --- | --- | --- | --- | --- |
+| D-001 | **Licence: MPL-2.0** for the client. The repo is public (`JohnnnyTang/footnoted`). Hosted services such as sync, routing and posters may be paid later. MPL is file-level copyleft and works with the App Store and with BSD/Apache dependencies. | Decided | owner, 2026-10-08 | Owner reverses. |
+| D-002 | **Stage 1 = M0 + M1.** The throwaway spike and the foundation run as one stage, with a decision gate between them (Stage 1, gate G1). Later milestones map one-to-one to stages, starting with Stage 2 = M2. The work is organised as stage → wave → session (see [`stages/README.md`](../stages/README.md)). | Decided | owner, 2026-10-08 | — |
+| D-003 | **SQLite driver: Drift**, on SQLCipher. Hot paths, such as bulk coverage writes, may drop to raw SQL through Drift's `customStatement` / batches. | **Proposed** — the M0 benchmark (S01-11) measures Drift against raw `sqlite3` and gate G1 confirms or overturns it. | owner, 2026-10-08 | G1 finds Drift's overhead material on the coverage write path. |
+| D-004 | **Minimum OS versions: the Flutter stable template defaults** (`flutter.minSdkVersion`, the template's iOS deployment target). They are raised only when a dependency requires it, and every raise is logged here. | Decided | owner, 2026-10-08 | A dependency forces a raise. |
+| D-005 | **UI language: English only at launch, i18n-ready.** Every user-visible string goes through `flutter gen-l10n` (ARB) from the first screen. No hard-coded UI strings. | Decided | owner, 2026-10-08 | — |
+| D-006 | **Temporary app identifiers:** Android `applicationId` and iOS bundle ID `com.example.footnoted`. Both stores reject `com.example`, so an accidental upload cannot make it permanent. Replace before the first store upload (handoff open question). | Decided (as temporary) | orchestrator, 2026-10-08 | Owner picks permanent IDs. |
+| D-007 | **Default buffer distance:** 100 m for `local` segments, user range 25 m – 2 km. Transit legs reveal their endpoints only; the transit default is finalised in Stage 4 (M4). At z20 that is a dilation radius of about 3–4 cells at mid latitudes. | **Proposed** — confirm at the Stage 1 W3 kickoff. | orchestrator, 2026-10-08 | Owner prefers another default. |
+| D-008 | **Repo layout: a Dart pub workspace.** `app/` (Flutter), `packages/footnoted_geo` (pure Dart cell math), `packages/footnoted_data` (Drift schema and repositories, Flutter-free so it tests with `dart test`), `spike/` (M0 harness, deleted from the tree at G1 and kept under tag `m0-spike`). **Only the spike harness is throwaway.** The quadkey cell math the spike needs goes straight into `footnoted_geo` so it is not written twice. | Decided | orchestrator, 2026-10-08 | G1 picks H3, in which case `footnoted_geo`'s grid module is replaced. |
+| D-009 | **iOS is verified by the owner on their Mac + iPhone.** Agents work on Windows and keep iOS code compiling through CI (`macos-latest`, `flutter build ios --no-codesign`). Every iOS-only check is a named owner step in a session brief and is never claimed by an agent. | Decided | owner, 2026-10-08 | An agent gets a Mac host. |
+| D-010 | **Toolchain pin:** Flutter **3.47.7** stable (Dart 3.13.5). The pin lives in `README.md` and in the CI workflow's `flutter-version`, and the two must match. Android SDK platform 36 and build-tools 37 on the dev machine. Upgrades happen at a wave kickoff, never mid-wave. | Decided | orchestrator, 2026-10-08 | A wave kickoff upgrades. |

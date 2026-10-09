@@ -1,0 +1,13 @@
+# Dart pub workspace root (D-008). Run `flutter pub get` here; every member
+# shares the root pubspec.lock. Members declare `resolution: workspace`.
+name: footnoted_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.13.5
+
+workspace:
+  - app
+  - packages/footnoted_geo
+  - packages/footnoted_data
+  - tool

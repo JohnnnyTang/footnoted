@@ -1,0 +1,30 @@
+# Dart / Flutter (workspace root; app/.gitignore covers platform build dirs)
+.dart_tool/
+build/
+*.iml
+.idea/
+.vscode/*
+!.vscode/extensions.json
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code: per-machine settings and session worktrees stay local
+.claude/settings.local.json
+.claude/worktrees/
+
+# Spike outputs (large generated fixtures; regenerate from the seed)
+spike/**/out/
+*.cells.bin
+*.segcells.bin
+*.trace.ndjson
+
+# Secrets never belong here
+*.jks
+*.keystore
+key.properties
+.env*

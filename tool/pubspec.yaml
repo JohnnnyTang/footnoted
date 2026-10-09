@@ -1,0 +1,14 @@
+name: footnoted_tool
+description: Repo scripts - invariant guards used by CI and by Claude Code hooks.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  yaml: ^3.1.3
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

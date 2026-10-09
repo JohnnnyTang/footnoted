@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "stage/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Must match README.md and docs/decisions.md D-010.
+  FLUTTER_VERSION: "3.47.7"
+
+jobs:
+  checks:
+    name: Analyze, format, test, guards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: dart analyze --fatal-infos
+      - run: dart format --output=none --set-exit-if-changed .
+      - name: Dependency guard (invariants 1, 10)
+        run: dart tool/check_deps.dart
+      - name: tool tests
+        working-directory: tool
+        run: dart test
+      - name: footnoted_geo tests
+        working-directory: packages/footnoted_geo
+        run: dart test
+      - name: footnoted_data tests
+        working-directory: packages/footnoted_data
+        run: dart test
+      - name: app tests
+        working-directory: app
+        run: flutter test
+
+  android:
+    name: Android build
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - working-directory: app
+        run: flutter build apk --debug
+
+  ios:
+    name: iOS build (no codesign)
+    runs-on: macos-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - working-directory: app
+        run: flutter build ios --debug --no-codesign

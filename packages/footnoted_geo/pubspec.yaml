@@ -1,0 +1,11 @@
+name: footnoted_geo
+description: Pure-Dart cell-grid math for FootNoted - tile math, rasterise, dilate, rollups, rectangle merge.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.5
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
