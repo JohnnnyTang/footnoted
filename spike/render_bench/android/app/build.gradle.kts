@@ -47,3 +47,11 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// maplibre_gl's Android module declares play-services-base and
+// play-services-location, which are proprietary (invariant 1). They are only
+// reached by its high-accuracy location engine, which this spike never
+// enables, so they are left out of the APK.
+configurations.all {
+    exclude(group = "com.google.android.gms")
+}

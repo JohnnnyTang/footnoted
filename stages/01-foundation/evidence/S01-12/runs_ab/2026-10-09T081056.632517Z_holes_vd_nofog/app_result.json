@@ -1,0 +1,185 @@
+{
+  "args": {
+    "strategy": "holes",
+    "texture": false,
+    "platform_view": "GLSurfaceView (Flutter virtual display)",
+    "detail": 6,
+    "passes": 3,
+    "warmup": true,
+    "fog": false,
+    "dataset": "dataset.cells.bin",
+    "label": "emulator"
+  },
+  "strategy": "holes",
+  "detail": 6,
+  "viewport_dp": [
+    411.42857142857144,
+    914.2857142857143
+  ],
+  "dpr": 2.625,
+  "build_mode": "profile",
+  "data": {
+    "source": "/storage/emulated/0/Android/data/com.example.footnoted.spike.render_bench/files/dataset.cells.bin",
+    "z20_cells": 1033958,
+    "load_ms": 24,
+    "rollup_ms": 3056,
+    "cells_by_level": {
+      "8": 15,
+      "10": 51,
+      "12": 216,
+      "14": 1078,
+      "16": 7411,
+      "18": 76138,
+      "20": 1033958
+    }
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "wall_ms": 20034,
+      "window_monotonic_us": [
+        9518544272,
+        9538560938
+      ],
+      "camera_moves": 701,
+      "camera_moves_skipped_busy": 237,
+      "flutter_frames": {
+        "frames": 936,
+        "span_s": 20.02,
+        "mean_fps": 46.74,
+        "median_fps": 47.68,
+        "p50_ms": 20.97,
+        "p90_ms": 30.83,
+        "p99_ms": 41.66,
+        "max_ms": 52.94,
+        "pct_over_32ms": 7.69
+      },
+      "flutter_build": {
+        "n": 937,
+        "p50_ms": 1.96,
+        "p90_ms": 3.31,
+        "max_ms": 11.21
+      },
+      "flutter_raster": {
+        "n": 937,
+        "p50_ms": 12.55,
+        "p90_ms": 22.45,
+        "max_ms": 41.41
+      },
+      "fog_updates": {
+        "n": 0,
+        "build": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "set": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "max_rects": 0
+      }
+    },
+    {
+      "pass": 2,
+      "wall_ms": 20032,
+      "window_monotonic_us": [
+        9542094271,
+        9562110937
+      ],
+      "camera_moves": 730,
+      "camera_moves_skipped_busy": 217,
+      "flutter_frames": {
+        "frames": 945,
+        "span_s": 20.0,
+        "mean_fps": 47.24,
+        "median_fps": 48.48,
+        "p50_ms": 20.63,
+        "p90_ms": 30.67,
+        "p99_ms": 42.81,
+        "max_ms": 59.58,
+        "pct_over_32ms": 7.94
+      },
+      "flutter_build": {
+        "n": 946,
+        "p50_ms": 1.95,
+        "p90_ms": 3.41,
+        "max_ms": 12.02
+      },
+      "flutter_raster": {
+        "n": 946,
+        "p50_ms": 12.56,
+        "p90_ms": 22.42,
+        "max_ms": 41.97
+      },
+      "fog_updates": {
+        "n": 0,
+        "build": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "set": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "max_rects": 0
+      }
+    },
+    {
+      "pass": 3,
+      "wall_ms": 20029,
+      "window_monotonic_us": [
+        9565644270,
+        9585660936
+      ],
+      "camera_moves": 740,
+      "camera_moves_skipped_busy": 226,
+      "flutter_frames": {
+        "frames": 964,
+        "span_s": 20.01,
+        "mean_fps": 48.17,
+        "median_fps": 49.63,
+        "p50_ms": 20.15,
+        "p90_ms": 29.83,
+        "p99_ms": 40.55,
+        "max_ms": 47.26,
+        "pct_over_32ms": 6.74
+      },
+      "flutter_build": {
+        "n": 965,
+        "p50_ms": 1.86,
+        "p90_ms": 3.21,
+        "max_ms": 10.52
+      },
+      "flutter_raster": {
+        "n": 965,
+        "p50_ms": 12.83,
+        "p90_ms": 22.16,
+        "max_ms": 40.18
+      },
+      "fog_updates": {
+        "n": 0,
+        "build": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "set": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "max_rects": 0
+      }
+    }
+  ]
+}
