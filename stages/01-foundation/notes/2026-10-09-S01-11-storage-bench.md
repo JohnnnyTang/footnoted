@@ -65,6 +65,7 @@ probe (result-emulator-*-run1.json "sqlite"): cipher_version "4.19.0 community",
 
 # CI (push of f6eb8a8): run 37891597772 → success: checks, Android build, iOS build,
   Spike iOS build (storage_bench / render_bench / h3_eval)   [storage_bench iOS = upstream SQLite, see Summary 2]
+# CI (push of 5dcc6ce, all code + this note's evidence): run 37899674174 → success, same six jobs
 ~~~
 
 ### Acceptance
