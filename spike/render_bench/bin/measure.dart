@@ -108,7 +108,7 @@ Future<void> main(List<String> args) async {
     }
     final log = await adb(['logcat', '-d', '-s', 'flutter:I']);
     for (final line in log.split('\n')) {
-      final start = RegExp(r'RENDER_BENCH_PASS (\d+) start').firstMatch(line);
+      final start = RegExp(r'RENDER_BENCH_PASS 1 start').firstMatch(line);
       if (start != null && !gfxReset) {
         await adb(['shell', 'dumpsys', 'gfxinfo', pkg, 'reset']);
         gfxReset = true;
@@ -124,6 +124,15 @@ Future<void> main(List<String> args) async {
       final done = RegExp(r'RENDER_BENCH_DONE (\S+)').firstMatch(line);
       if (done != null) donePath = done.group(1);
     }
+    // A shared device: another app taking the foreground stops the pan
+    // ticker, so the run is void. Exit 3 lets the caller retry.
+    final top = await adb(['shell', 'dumpsys', 'activity', 'activities']);
+    final resumed = RegExp(r'topResumedActivity=\S+ \S+ (\S+)').firstMatch(top);
+    if (resumed != null && !resumed.group(1)!.startsWith(pkg)) {
+      stderr.writeln('preempted by ${resumed.group(1)}');
+      File('${dir.path}/PREEMPTED').writeAsStringSync('${resumed.group(1)}\n');
+      exit(3);
+    }
   }
   if (donePath == null) {
     stderr.writeln('timed out waiting for RENDER_BENCH_DONE');
@@ -136,7 +145,7 @@ Future<void> main(List<String> args) async {
       .writeAsStringSync(await adb(['logcat', '-d', '-s', 'flutter:I']));
   await Process.run(
     'adb',
-    ['-s', serial, 'pull', donePath!, '${dir.path}/app_result.json'],
+    ['-s', serial, 'pull', donePath, '${dir.path}/app_result.json'],
     environment: {'MSYS_NO_PATHCONV': '1'},
   );
 
