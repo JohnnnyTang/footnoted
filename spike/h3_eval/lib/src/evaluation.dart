@@ -18,6 +18,10 @@ const h3Resolutions = [11, 12];
 const timingReps = 3;
 const samplesPerCorridor = 20000;
 
+/// cellsToMultiPolygon on 3.4 M res-12 cells took 468 s in run 1; later runs
+/// cap it. Raise the cap to measure everything.
+const outlineMaxCells = 1000000;
+
 int _medianMs(List<int> v) => (v..sort())[v.length ~/ 2];
 
 (T, int) _timed<T>(T Function() f) {
@@ -215,46 +219,73 @@ Future<void> runEvaluation(Emit emit, {required String buildMode}) async {
 
     final z10Tiles = quadkeyCover(c.line, c.bufferM, 20).cells.rollup(10);
 
-    for (final level in quadLevels) {
-      final (cover, spansMs, spanTimes) = _timedMedian(
-        () => quadkeyCover(c.line, c.bufferM, level),
-      );
-      final s = cover.cells;
-      final (ids, idsMs) = _timed(s.toIds);
-      final (compacted, compactMs) = _timed(() => s.compactedCount());
-      final rollups = <String, Object?>{};
-      for (final p in [18, 16]) {
-        final r = s.rollup(p);
-        rollups['z$p'] = {
-          'cells': r.cellCount,
-          'spans': r.spanCount,
-          'rects': r.rectangleCount(),
-          'per_z10_tile': _perTile(r, 10),
-        };
+    for (final rule in RadiusRule.values) {
+      for (final level in quadLevels) {
+        final (cover, spansMs, spanTimes) = _timedMedian(
+          () => quadkeyCover(c.line, c.bufferM, level, rule: rule),
+        );
+        final s = cover.cells;
+        final (ids, idsMs) = _timed(s.toIds);
+        final (compacted, compactMs) = _timed(() => s.compactedCount());
+        final (rects, rectsMs) = _timed(s.rectangleCount);
+        final (perTile, perTileMs) = _timed(() => _perTile(s, 10));
+        final rollups = <String, Object?>{};
+        for (final p in [18, 16]) {
+          final (r, rollupMs) = _timed(() => s.rollup(p));
+          rollups['z$p'] = {
+            'cells': r.cellCount,
+            'spans': r.spanCount,
+            'rollup_ms': rollupMs,
+            'rects': r.rectangleCount(),
+            'per_z10_tile': _perTile(r, 10),
+          };
+        }
+        emit('quadkey', {
+          'corridor': c.name,
+          'level': level,
+          'radius_rule': rule.name,
+          'line_cells': cover.lineCells,
+          'cells': s.cellCount,
+          'spans': s.spanCount,
+          'rows': s.rows.length,
+          'cover_to_spans_ms_median': spansMs,
+          'cover_to_spans_ms_runs': spanTimes,
+          'spans_to_sorted_ids_ms': idsMs,
+          'ids_bytes': ids.lengthInBytes,
+          'compacted_cells': compacted,
+          'compact_ms': compactMs,
+        });
+        // Android logcat truncates a line at about 1 KB, so emit in parts.
+        emit('quadkey_render', {
+          'corridor': c.name,
+          'level': level,
+          'radius_rule': rule.name,
+          'rects': rects,
+          'rects_ms': rectsMs,
+          'per_z10_tile': perTile,
+          'per_z10_tile_ms': perTileMs,
+        });
+        for (final e in rollups.entries) {
+          emit('quadkey_rollup', {
+            'corridor': c.name,
+            'level': level,
+            'radius_rule': rule.name,
+            'rollup': e.key,
+            ...e.value! as Map<String, Object?>,
+          });
+        }
+        emit('quadkey_error', {
+          'corridor': c.name,
+          'level': level,
+          'radius_rule': rule.name,
+          'area_km2': _r3(_quadAreaM2(s) / 1e6),
+          'boundary_error': _boundaryError(samples, c.bufferM, (p) {
+            final x = lonToCellX(p.lon, level).floor();
+            final y = latToCellY(p.lat, level).floor();
+            return s.contains(x, y);
+          }),
+        });
       }
-      emit('quadkey', {
-        'corridor': c.name,
-        'level': level,
-        'line_cells': cover.lineCells,
-        'cells': s.cellCount,
-        'spans': s.spanCount,
-        'rows': s.rows.length,
-        'cover_to_spans_ms_median': spansMs,
-        'cover_to_spans_ms_runs': spanTimes,
-        'spans_to_sorted_ids_ms': idsMs,
-        'ids_bytes': ids.lengthInBytes,
-        'compacted_cells': compacted,
-        'compact_ms': compactMs,
-        'rects': s.rectangleCount(),
-        'per_z10_tile': _perTile(s, 10),
-        'rollups': rollups,
-        'area_km2': _r3(_quadAreaM2(s) / 1e6),
-        'boundary_error': _boundaryError(samples, c.bufferM, (p) {
-          final x = lonToCellX(p.lon, level).floor();
-          final y = latToCellY(p.lat, level).floor();
-          return s.contains(x, y);
-        }),
-      });
     }
 
     final capsules = [
@@ -289,7 +320,13 @@ Future<void> runEvaluation(Emit emit, {required String buildMode}) async {
       final (pubCompact, pubCompactMs) = _timed(
         () => h3.compactCells(bigCells),
       );
-      final cellArea = h3.cellArea(bigCells.first, H3Units.m);
+      final step = math.max(1, bigCells.length ~/ 2000);
+      var areaSum = 0.0, areaN = 0;
+      for (var i = 0; i < bigCells.length; i += step) {
+        areaSum += h3.cellArea(bigCells[i], H3Units.m);
+        areaN++;
+      }
+      final cellArea = areaSum / areaN;
       final result = <String, Object?>{
         'corridor': c.name,
         'res': res,
@@ -303,7 +340,7 @@ Future<void> runEvaluation(Emit emit, {required String buildMode}) async {
         'compacted_cells_public_api': pubCompact.length,
         'compact_ms_raw_ffi': rawCompactMs,
         'compact_ms_public_api': pubCompactMs,
-        'cell_area_m2_first': _r1(cellArea),
+        'cell_area_m2_sampled_mean': _r1(cellArea),
         'area_km2': _r3(rawCells.length * cellArea / 1e6),
         'vertices_hex_each': rawCells.length * 6,
         'vertices_hex_compacted': rawCompact.length * 6,
@@ -316,6 +353,14 @@ Future<void> runEvaluation(Emit emit, {required String buildMode}) async {
       };
       emit('h3', result);
 
+      if (bigCells.length > outlineMaxCells) {
+        emit('h3_outline', {
+          'corridor': c.name,
+          'res': res,
+          'skipped': 'cells > outlineMaxCells ($outlineMaxCells)',
+        });
+        continue;
+      }
       final (outline, outlineMs) = _timed(
         () => h3.cellsToMultiPolygon(bigCells),
       );
@@ -347,7 +392,9 @@ Future<void> runEvaluation(Emit emit, {required String buildMode}) async {
   emit('pixel_table_45N', {
     'note': 'logical dp per cell edge at MapLibre zoom (512 px tiles); px at DPR 2.75',
     'widths_m': {for (final w in widths) w.name: _r1(w.widthM)},
-    'rows': pixelTable(cells: widths, lat: 45),
   });
+  for (final row in pixelTable(cells: widths, lat: 45)) {
+    emit('pixel_row_45N', row);
+  }
   emit('done', {});
 }

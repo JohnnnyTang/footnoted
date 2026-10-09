@@ -47,6 +47,16 @@ void main() {
       expect(c.cells.cellCount, 29);
     });
 
+    test('exact rule: r = 100 / 38.2 = 2.6 cells → 21 cells', () {
+      final c = quadkeyCover(
+        const [LatLng(0.0001, 10)],
+        100,
+        20,
+        rule: RadiusRule.exact,
+      );
+      expect(c.cells.cellCount, 21);
+    });
+
     test('at 60°N the radius in cells doubles', () {
       final eq = quadkeyCover(const [LatLng(0.0001, 10)], 100, 20);
       final n60 = quadkeyCover(const [LatLng(60, 10)], 100, 20);

@@ -66,36 +66,40 @@ void supercover(
   }
 }
 
+/// `ceil`: handoff "Revealing cells" step 3, r = ceil(buffer / cell width)
+/// cells, mask dx² + dy² ≤ r². `exact`: mask dx² + dy² ≤ (buffer / width)²,
+/// i.e. a cell is in if its centre is within the buffer of the line cell's
+/// centre.
+enum RadiusRule { ceil, exact }
+
 class _Dilator {
-  _Dilator(this.level, this.bufferM);
+  _Dilator(this.level, this.bufferM, this.rule);
 
   final int level;
   final double bufferM;
+  final RadiusRule rule;
   final raw = <int, List<int>>{};
-  final _radiusByRow = <int, int>{};
-  final _halfWidths = <int, List<int>>{};
+  final _halfWidthsByRow = <int, List<int>>{};
   int lineCells = 0;
   int? _lastX, _lastY;
 
-  // Handoff "Revealing cells" step 3: r = ceil(buffer / cell width at the
-  // row's latitude), stamped as a disk mask dx² + dy² ≤ r².
-  int radiusFor(int y) => _radiusByRow.putIfAbsent(
-    y,
-    () => (bufferM / cellWidthM(cellRowCenterLat(y, level), level)).ceil(),
-  );
-
-  List<int> halfWidths(int r) => _halfWidths.putIfAbsent(
-    r,
-    () => [for (var dy = 0; dy <= r; dy++) math.sqrt(r * r - dy * dy).floor()],
-  );
+  // Radius is per row, from that row's latitude (F01.6).
+  List<int> halfWidths(int y) => _halfWidthsByRow.putIfAbsent(y, () {
+    final rr = bufferM / cellWidthM(cellRowCenterLat(y, level), level);
+    final r = rule == RadiusRule.ceil ? rr.ceilToDouble() : rr;
+    return [
+      for (var dy = 0; dy <= r.floor(); dy++)
+        math.sqrt(r * r - dy * dy).floor(),
+    ];
+  });
 
   void add(int x, int y) {
     if (x == _lastX && y == _lastY) return;
     _lastX = x;
     _lastY = y;
     lineCells++;
-    final r = radiusFor(y);
-    final hw = halfWidths(r);
+    final hw = halfWidths(y);
+    final r = hw.length - 1;
     for (var dy = -r; dy <= r; dy++) {
       final h = hw[dy.abs()];
       _stamp(y + dy, x - h, x + h);
@@ -127,8 +131,13 @@ class QuadCover {
 
 /// Rasterise the polyline (straight in Mercator between vertices) and dilate
 /// by [bufferM].
-QuadCover quadkeyCover(List<LatLng> line, double bufferM, int level) {
-  final d = _Dilator(level, bufferM);
+QuadCover quadkeyCover(
+  List<LatLng> line,
+  double bufferM,
+  int level, {
+  RadiusRule rule = RadiusRule.ceil,
+}) {
+  final d = _Dilator(level, bufferM, rule);
   final xs = [for (final p in line) lonToCellX(p.lon, level)];
   final ys = [for (final p in line) latToCellY(p.lat, level)];
   if (line.length == 1) {
