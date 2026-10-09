@@ -16,3 +16,11 @@ workspace:
   - spike/storage_bench
   - spike/render_bench
   - spike/h3_eval
+
+# D-011: package:sqlite3 links SQLCipher (with R*Tree) on every platform.
+# Build-hook user-defines are read only from the workspace root, so this is
+# workspace-wide by design.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlcipher
