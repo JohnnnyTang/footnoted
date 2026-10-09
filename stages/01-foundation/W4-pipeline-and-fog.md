@@ -1,6 +1,6 @@
 # Stage 1 · W4 — Reveal pipeline, fog, guards
 
-**Opens after:** W3 merged. **Parallel sessions:** S01-40, S01-41, S01-42 (one dispatch). **Closes into:** W5.
+**Opens after:** W3 merged **and G1-B ruled (W2b closed, `spike/` deleted, F01.4 frozen; D-012)**. **Parallel sessions:** S01-40, S01-41, S01-42 (one dispatch). **Closes into:** W5.
 **Purpose:** compose the W3 blocks into the derived-data pipeline (raw → geometry → coverage → rollups/stats) and the fog renderer that reads it, and harden CI around the invariants.
 
 ## Kickoff obligations

@@ -1,7 +1,7 @@
 # Stage 1 — Foundation (M0 spike + M1 foundation)
 
 **Stage opened:** 2026-10-08 (planning). **Branch:** `stage/01-foundation`, cut from `main` by the W1 kickoff.
-**State:** `ACTIVE`. W0 and W1 (spike harness) are merged. **W2 waits on the owner's Android phone.**
+**State:** `ACTIVE`. W0 and W1 (spike harness) are merged. **W2 (S01-20a, no device) is next**; the phone is needed before W4 (D-012).
 **Milestones:** M0 (performance spike, throwaway harness) + M1 (foundation), per [`HANDOFF.md`](../../docs/HANDOFF.md#milestones) and D-002.
 **Backlog:** [`VERIFICATION_BACKLOG.md`](VERIFICATION_BACKLOG.md) (`S01-V###`, `S01-E#`).
 **Waves:** [W0](W0-bootstrap.md) · [W1](W1-spike.md) · [W2](W2-measure-and-decide.md) · [W3](W3-building-blocks.md) · [W4](W4-pipeline-and-fog.md) · [W5](W5-integrate-and-verify.md)
@@ -21,7 +21,7 @@ Tags: **[auto]** an automated test in CI · **[device-A]** run by an agent on th
 1. **[auto][doc] Reproducible dataset.** A seeded generator produces five years of synthetic traces: a dense home city (daily commutes plus weekend walks), at least three road trips of 1,000 km or more, at least ten flights including one across the antimeridian, and a few foreign city stays. Same seed → byte-identical output.
 2. **[device-A][owner-iOS] Pan performance.** With about 1,000,000 revealed z20 cells loaded, a scripted 20-second pan at **z10** in a **profile/release** build holds a **median ≥ 55 fps with ≤ 5% of frames over 32 ms** on the owner's mid-range Android and on the owner's older iPhone. The method, device model, OS and build mode are recorded.
 3. **[doc] Measured storage.** On-device database size, bulk-insert time, delete-segment time and tile-query latency for **per-(cell, segment) rows vs run-length spans**, plus **Drift vs raw `sqlite3`** on the write path, all under SQLCipher.
-4. **[doc] Gate G1 ruled.** Written decisions on (a) quadkey vs H3, (b) z20 vs z21, (c) the coverage storage layout, (d) confirming or overturning D-003 (Drift), and (e) the fog geometry approach. Each cites its numbers. The **F01 contract** is frozen (see below). The `spike/` directory is removed from the tree and tagged `m0-spike`.
+4. **[doc] Gate G1 ruled.** Written decisions on (a) quadkey vs H3, (b) z20 vs z21, (c) the coverage storage layout, (d) confirming or overturning D-003 (Drift), and (e) the fog geometry approach. Each cites its numbers. The **F01 contract** is frozen (see below). The `spike/` directory is removed from the tree and tagged `m0-spike`. **Amended 2026-10-09 (D-012):** ruled in two parts. G1-A covers (a)–(d) and freezes F01.1–F01.3, F01.5 and F01.6 before W3. G1-B covers (e) and criterion 2 on devices, before W4; it freezes F01.4 and removes `spike/`.
 
 **M1: foundation**
 
@@ -35,9 +35,9 @@ Tags: **[auto]** an automated test in CI · **[device-A]** run by an agent on th
 12. **[auto] Invariant guards.** CI fails on a denylisted or non-open-licensed dependency (invariant 1) and on `ACCESS_BACKGROUND_LOCATION` in the Android manifest. The `Entitlements` service (every check true) and the first-use timestamp exist. No network host is contacted other than the tile/style/glyph hosts.
 13. **[doc] Docs true.** `HANDOFF.md` is updated wherever the build diverged; the decision log, `docs/README.md` and this README are current.
 
-## The F01 contract (frozen at G1)
+## The F01 contract (frozen at G1-A and G1-B, D-012)
 
-These are the cross-package seams W3–W5 build against. Until G1 they are **proposals**, and the spike may change any of them.
+These are the cross-package seams W3–W5 build against. Until G1 they are **proposals**, and the spike may change any of them. Per D-012, G1-A freezes F01.1, F01.2, F01.3, F01.5 and F01.6; G1-B freezes F01.4.
 
 | Clause | Proposal before G1 |
 | --- | --- |
@@ -51,21 +51,25 @@ These are the cross-package seams W3–W5 build against. Until G1 they are **pro
 ## Waves at a glance
 
 ```
-W0 ─▶ W1 (4 parallel) ─▶ W2 (measure) ─▶ G1 ─▶ W3 (4 parallel) ─▶ W4 (3 parallel) ─▶ W5 (integrate, verify) ─▶ exit
-      spike harness        on-device       owner    building blocks    pipeline + fog         M1 exit on devices
-                           numbers         rules
+W0 ─▶ W1 (4 parallel) ─▶ W2 (S01-20a) ─▶ G1-A ─▶ W3 (4 parallel) ─▶ W2b (devices) ─▶ G1-B ─▶ W4 (3 parallel) ─▶ W5 (integrate, verify) ─▶ exit
+      spike harness        real data,        owner     building blocks     Android +         owner    pipeline + fog         M1 exit on devices
+                           no device         rules     (no device)         iPhone runs       rules
+
 ```
+
+G1 is split in two (D-012): the owner's phone is needed before W4, not before W3.
 
 | Wave | Purpose | Sessions (parallel within the wave) | Owner involvement |
 | --- | --- | --- | --- |
 | [W0](W0-bootstrap.md) | Plan, repo, toolchain, Claude config, scaffold | S01-00 (this planning session, foreground) | Answered planning questions ✔ |
 | [W1](W1-spike.md) | M0 harness and first measurements | **S01-10** trace generator + quadkey cell math · **S01-11** storage benchmark · **S01-12** fog render benchmark · **S01-13** H3 and cell-size evaluation | none |
-| [W2](W2-measure-and-decide.md) | On-device numbers, then gate G1 | **S01-20** integrated spike + Android measurement · **S01-21** iOS measurement (owner runs the runbook) · *S01-22 conditional perf remediation* | **Plug in the Android phone; run the iOS runbook; rule G1** |
+| [W2](W2-measure-and-decide.md) | Real-dataset spike (no device), then gate **G1-A** (D-012) | **S01-20a** integrated spike on the real dataset + scripted device run | **Rule G1-A (a)–(d)** |
+| [W2b](W2-measure-and-decide.md#amendment-2026-10-09-d-012) | On-device numbers, then gate **G1-B**; runs after W3, before W4 | **S01-20b** Android measurement · **S01-21** iOS measurement (owner runs the runbook) · *S01-22 conditional perf remediation* | **Plug in the Android phone; run the iOS runbook; rule G1-B** |
 | [W3](W3-building-blocks.md) | M1 building blocks | **S01-30** app shell · **S01-31** cell-grid library · **S01-32** encrypted database · **S01-33** map + dark style + attribution | Confirm D-007 buffer at kickoff |
 | [W4](W4-pipeline-and-fog.md) | Derived pipeline and fog | **S01-40** reveal pipeline + provenance · **S01-41** blocky fog renderer · **S01-42** invariant guards + CI hardening | none |
 | [W5](W5-integrate-and-verify.md) | Wire end to end; verify the exit | **S01-50** end-to-end wiring + dev harness (wiring owner) · then **S01-51** exit verification + docs | **Android phone; iOS run on the Mac** |
 
-**15 sessions** (plus one conditional) across 5 implementation waves. Each wave file carries the briefs, the file-ownership table and the merge order.
+**16 sessions** (plus one conditional) across 6 implementation waves (S01-20 split into 20a and 20b by D-012). Each wave file carries the briefs, the file-ownership table and the merge order.
 
 ### Session index
 
@@ -76,8 +80,9 @@ W0 ─▶ W1 (4 parallel) ─▶ W2 (measure) ─▶ G1 ─▶ W3 (4 parallel) �
 | S01-11 | Storage benchmark (layout × driver, SQLCipher) | M | W1 | W1 seams |
 | S01-12 | Fog render benchmark (`maplibre_gl`) | L | W1 | W1 seams |
 | S01-13 | H3 + cell-size evaluation | S | W1 | W1 seams |
-| S01-20 | Integrated spike + Android measurement | M | W2 | W1 merged |
-| S01-21 | iOS measurement runbook + owner run | S | W2 | S01-20's build |
+| S01-20a | Integrated spike on the real dataset + scripted device run | M | W2 | W1 merged, D-011 |
+| S01-20b | Android device measurement | S | W2b | S01-20a, W3 merged, S01-E1 |
+| S01-21 | iOS measurement runbook + owner run | S | W2b | S01-20b's build, S01-E2 |
 | S01-22 | *(conditional)* perf remediation | M | W2 | a failed criterion 2 |
 | S01-30 | App shell (structure, l10n, theme, about, entitlements) | M | W3 | G1 |
 | S01-31 | Cell-grid library (production) | L | W3 | G1 |
@@ -110,10 +115,11 @@ W0 ─▶ W1 (4 parallel) ─▶ W2 (measure) ─▶ G1 ─▶ W3 (4 parallel) �
   - **S01-12** ✓ emulator only: recommends fog (a) holes d6 on GLSurfaceView/VD; `MEASURE.md` runbook; needs JDK 21 and a GMS exclusion (S01-V012, S01-V013).
   - **S01-13** ✓ recommends quadkey z20 with an exact dilation radius over H3 and z21.
 - **2026-10-09. W2 kickoff, part 1.** The owner ruled S01-V005 → **D-011**: the SQLCipher build-hook setting is in the root `pubspec.yaml`, and the in-workspace probe reports `cipher_version` 4.19.0 community with R\*Tree on. Suite unchanged at 85. Nothing dispatched. See [the W2 kickoff note](notes/2026-10-09-W2-kickoff.md).
-- **Next:** the W2 kickoff, part 2 (`orchestrate-wave`): the owner connects the Android phone (S01-E1) and confirms the Mac + iPhone (S01-E2); then S01-20.
+- **2026-10-09. Owner ruling D-012:** G1 splits into **G1-A** ((a)–(d), before W3) and **G1-B** ((e) + criterion 2 on devices, before W4). S01-20 splits into **S01-20a** (W2, no device) and **S01-20b** (new wave **W2b**, after W3). `spike/` stays until G1-B. The W2, W3 and W4 files and the waves table are amended.
+- **Next (a new session):** the W2 kickoff, part 2 (`orchestrate-wave`): rebase, re-run the suite, then dispatch **S01-20a alone** (brief: [W2 amendment](W2-measure-and-decide.md#amendment-2026-10-09-d-012)). No device is needed. At the W2 close the owner rules **G1-A**, then W3.
 
 ## Blockers that still bind
 
-- `S01-E1` — **Owner's Android test phone**: the model and USB debugging are needed by W2 (S01-20). **Blocks the W2 kickoff.**
-- `S01-E2` — **Owner's Mac + older iPhone** with Xcode, for S01-21 / S01-51. Not blocking W1.
+- `S01-E1` — **Owner's Android test phone** (model, Android version, RAM, USB debugging) for **W2b** (S01-20b), which must close before **W4** (D-012). Does not block W2 or W3.
+- `S01-E2` — **Owner's Mac + older iPhone** with Xcode, for S01-21 (W2b) and S01-51. Does not block W2 or W3.
 - D-007 (default buffer) awaits owner confirmation at the W3 kickoff.

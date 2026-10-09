@@ -1,11 +1,11 @@
 # Stage 1 · W3 — M1 building blocks
 
-**Opens after:** G1 is ruled and F01 is frozen. **Parallel sessions:** S01-30, S01-31, S01-32, S01-33 (one dispatch). **Closes into:** W4.
+**Opens after:** G1-A is ruled and F01.1–F01.3, F01.5 and F01.6 are frozen (D-012). **Parallel sessions:** S01-30, S01-31, S01-32, S01-33 (one dispatch). **Closes into:** W4.
 **Purpose:** build the four independent foundations (app shell, cell-grid library, encrypted database, map + style) against frozen seams, so that W4 only composes them.
 
 ## Kickoff obligations (orchestrator, foreground)
 
-1. Rebase; re-run the suite; record it. Confirm `spike/` is gone and the `m0-spike` tag exists.
+1. Rebase; re-run the suite; record it. **Amended 2026-10-09 (D-012):** `spike/` stays until G1-B. Confirm instead that G1-A is ruled and F01.1–F01.3, F01.5 and F01.6 are frozen. W3 adds dependencies to `app/` and `packages/`; check that the spike packages still resolve and their tests still pass.
 2. **Owner ruling:** confirm or amend **D-007** (default buffer of 100 m local, range 25 m – 2 km).
 3. **Seams (implement once; frozen for W3):**
    - **All W3 dependencies added up front** to `app/pubspec.yaml` and `packages/*/pubspec.yaml`, with `pubspec.lock` committed. This stops four sessions fighting over the lockfile. Expected: `maplibre_gl`, `url_launcher`, `flutter_riverpod` + `go_router` (state/routing, **Proposed**: record a D-row), `flutter_secure_storage`, `drift` + `drift_dev` + `build_runner`, the SQLCipher packaging chosen at G1, and `intl` / `flutter_localizations`. Run `tool/check_deps.dart` on the result.
