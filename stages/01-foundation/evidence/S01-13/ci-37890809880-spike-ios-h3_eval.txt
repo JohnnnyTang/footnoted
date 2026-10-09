@@ -1,0 +1,18 @@
+Spike iOS build (h3_eval)	Run flutter build ios --debug --no-codesign	2026-10-09T05:57:35.8447970Z The following plugins do not support Swift Package Manager for ios:
+Spike iOS build (h3_eval)	Run flutter build ios --debug --no-codesign	2026-10-09T05:57:35.8448640Z   - h3_flutter
+Spike iOS build (h3_eval)	Run flutter build ios --debug --no-codesign	2026-10-09T05:57:35.8450640Z This will become an error in a future version of Flutter. Please contact the plugin maintainers to request Swift Package Manager adoption.
+Spike iOS build (h3_eval)	Run flutter build ios --debug --no-codesign	2026-10-09T05:57:39.2657080Z Running pod install...                                           1,133ms
+Spike iOS build (h3_eval)	Run flutter build ios --debug --no-codesign	2026-10-09T05:58:24.4524490Z Xcode build done.                                           45.2s
+Spike iOS build (h3_eval)	Run flutter build ios --debug --no-codesign	2026-10-09T05:58:26.2857460Z ✓ Built build/ios/iphoneos/Runner.app
+
+✓ s01/13-h3-eval CI · 37890809880
+Triggered via push about 10 minutes ago
+
+JOBS
+✓ Analyze, format, test, guards in 1m27s (ID 113691085274)
+✓ Spike iOS build (storage_bench) in 2m56s (ID 113691455901)
+✓ Spike iOS build (h3_eval) in 2m34s (ID 113691455985)
+✓ Android build in 3m14s (ID 113691455992)
+✓ Spike iOS build (render_bench) in 2m24s (ID 113691456007)
+✓ iOS build (no codesign) in 3m2s (ID 113691456147)
+
