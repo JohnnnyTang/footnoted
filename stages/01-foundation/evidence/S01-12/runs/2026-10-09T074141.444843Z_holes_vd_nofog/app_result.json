@@ -1,0 +1,185 @@
+{
+  "args": {
+    "strategy": "holes",
+    "texture": false,
+    "platform_view": "GLSurfaceView (Flutter virtual display)",
+    "detail": 6,
+    "passes": 3,
+    "warmup": true,
+    "fog": false,
+    "dataset": "dataset.cells.bin",
+    "label": "emulator"
+  },
+  "strategy": "holes",
+  "detail": 6,
+  "viewport_dp": [
+    411.42857142857144,
+    914.2857142857143
+  ],
+  "dpr": 2.625,
+  "build_mode": "profile",
+  "data": {
+    "source": "/storage/emulated/0/Android/data/com.example.footnoted.spike.render_bench/files/dataset.cells.bin",
+    "z20_cells": 1033958,
+    "load_ms": 35,
+    "rollup_ms": 3056,
+    "cells_by_level": {
+      "8": 15,
+      "10": 51,
+      "12": 216,
+      "14": 1078,
+      "16": 7411,
+      "18": 76138,
+      "20": 1033958
+    }
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "wall_ms": 20036,
+      "window_monotonic_us": [
+        7763361009,
+        7783377675
+      ],
+      "camera_moves": 1060,
+      "camera_moves_skipped_busy": 84,
+      "flutter_frames": {
+        "frames": 1142,
+        "span_s": 20.0,
+        "mean_fps": 57.11,
+        "median_fps": 58.26,
+        "p50_ms": 17.16,
+        "p90_ms": 23.8,
+        "p99_ms": 32.85,
+        "max_ms": 42.64,
+        "pct_over_32ms": 1.14
+      },
+      "flutter_build": {
+        "n": 1143,
+        "p50_ms": 1.48,
+        "p90_ms": 2.4,
+        "max_ms": 8.07
+      },
+      "flutter_raster": {
+        "n": 1143,
+        "p50_ms": 14.06,
+        "p90_ms": 21.04,
+        "max_ms": 35.34
+      },
+      "fog_updates": {
+        "n": 0,
+        "build": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "set": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "max_rects": 0
+      }
+    },
+    {
+      "pass": 2,
+      "wall_ms": 20027,
+      "window_monotonic_us": [
+        7786911008,
+        7806927674
+      ],
+      "camera_moves": 1047,
+      "camera_moves_skipped_busy": 91,
+      "flutter_frames": {
+        "frames": 1136,
+        "span_s": 20.01,
+        "mean_fps": 56.76,
+        "median_fps": 58.0,
+        "p50_ms": 17.24,
+        "p90_ms": 24.18,
+        "p99_ms": 32.76,
+        "max_ms": 44.13,
+        "pct_over_32ms": 1.14
+      },
+      "flutter_build": {
+        "n": 1137,
+        "p50_ms": 1.49,
+        "p90_ms": 2.48,
+        "max_ms": 6.85
+      },
+      "flutter_raster": {
+        "n": 1137,
+        "p50_ms": 12.56,
+        "p90_ms": 20.81,
+        "max_ms": 40.04
+      },
+      "fog_updates": {
+        "n": 0,
+        "build": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "set": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "max_rects": 0
+      }
+    },
+    {
+      "pass": 3,
+      "wall_ms": 20036,
+      "window_monotonic_us": [
+        7810461007,
+        7830477673
+      ],
+      "camera_moves": 987,
+      "camera_moves_skipped_busy": 110,
+      "flutter_frames": {
+        "frames": 1095,
+        "span_s": 19.99,
+        "mean_fps": 54.78,
+        "median_fps": 56.22,
+        "p50_ms": 17.79,
+        "p90_ms": 25.22,
+        "p99_ms": 32.87,
+        "max_ms": 42.56,
+        "pct_over_32ms": 1.28
+      },
+      "flutter_build": {
+        "n": 1096,
+        "p50_ms": 1.5,
+        "p90_ms": 2.73,
+        "max_ms": 9.78
+      },
+      "flutter_raster": {
+        "n": 1096,
+        "p50_ms": 13.01,
+        "p90_ms": 20.71,
+        "max_ms": 39.11
+      },
+      "fog_updates": {
+        "n": 0,
+        "build": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "set": {
+          "n": 0,
+          "p50_ms": -1.0,
+          "p90_ms": -1.0,
+          "max_ms": 0.0
+        },
+        "max_rects": 0
+      }
+    }
+  ]
+}

@@ -21,7 +21,7 @@ Always write down the **device model, OS version, build mode (profile), the plat
 | --- | --- | --- |
 | **SurfaceFlinger `--latency`** on the app's `SurfaceView[…MainActivity](BLAST)` layer | The actual present time of every frame of Flutter's surface. In **both** platform-view modes Flutter composites the map into this surface, so these are the frames the user sees. | **The criterion-2 number.** `bin/measure.dart` collects it. |
 | Flutter `FrameTiming` (in the app, `flutter_frames` / `flutter_raster`) | Frames of Flutter's raster thread, including compositing the map texture. Does not see MapLibre's own GL thread. | Cross-check; shows whether the Flutter side (raster time) is the bottleneck. |
-| `dumpsys gfxinfo <pkg> framestats` | HWUI (the Android View renderer) only. | Not useful here: Flutter and MapLibre do not draw through HWUI; it reports 0 frames in the GLSurfaceView mode. Captured anyway in `gfxinfo.txt`. |
+| `dumpsys gfxinfo <pkg> framestats` | HWUI (the Android View renderer) only. | GLSurfaceView mode: always 0 frames, because neither Flutter nor MapLibre draws through HWUI. TextureView mode: it counts HWUI's compositing of the map's `TextureView`, which is the map's frame rate but not what reaches the screen. Captured anyway in `gfxinfo.txt`; do not use it for criterion 2. |
 | MapLibre's own frame callback | `MapView.addOnDidFinishRenderingFrameListener` exists in MapLibre Native, but **`maplibre_gl` 0.27.1 does not expose it** to Dart. | Would need a plugin fork; not needed while SurfaceFlinger works. |
 | Perfetto | Everything (SurfaceFlinger frame timeline, per-thread CPU, GPU completion). | Diagnosis of a failed run, by hand (section 5). |
 
