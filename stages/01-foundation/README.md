@@ -117,6 +117,7 @@ G1 is split in two (D-012): the owner's phone is needed before W4, not before W3
 - **2026-10-09. W2 kickoff, part 1.** The owner ruled S01-V005 → **D-011**: the SQLCipher build-hook setting is in the root `pubspec.yaml`, and the in-workspace probe reports `cipher_version` 4.19.0 community with R\*Tree on. Suite unchanged at 85. Nothing dispatched. See [the W2 kickoff note](notes/2026-10-09-W2-kickoff.md).
 - **2026-10-09. Owner ruling D-012:** G1 splits into **G1-A** ((a)–(d), before W3) and **G1-B** ((e) + criterion 2 on devices, before W4). S01-20 splits into **S01-20a** (W2, no device) and **S01-20b** (new wave **W2b**, after W3). `spike/` stays until G1-B. The W2, W3 and W4 files and the waves table are amended.
 - **Next (a new session):** the W2 kickoff, part 2 (`orchestrate-wave`): rebase, re-run the suite, then dispatch **S01-20a alone** (brief: [W2 amendment](W2-measure-and-decide.md#amendment-2026-10-09-d-012)). No device is needed. At the W2 close the owner rules **G1-A**, then W3.
+- **2026-10-09. W2 kickoff, part 2.** Nothing to rebase; baseline 85 green. At the owner's request S01-20a is split into **S01-20a1** (real dataset through storage + G1-A inputs) and **S01-20a2** (DB-backed fog, Mexico City pan, render step); seams in `3473a2d` (`spike/device_run/` driver, `sqlite3` in render_bench). Both dispatched in parallel. See [the kickoff note](notes/2026-10-09-W2-kickoff.md#part-2-2026-10-09-baseline-split-seams-dispatch).
 
 ## Blockers that still bind
 
