@@ -9,9 +9,11 @@ environment:
   sdk: ^3.13.5
 
 dependencies:
+  ffi: ^2.1.0
   flutter:
     sdk: flutter
   footnoted_geo: any
+  h3_flutter: ^0.7.1
 
 dev_dependencies:
   flutter_test:
