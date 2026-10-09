@@ -109,7 +109,7 @@ W0 ─▶ W1 (4 parallel) ─▶ W2 (measure) ─▶ G1 ─▶ W3 (4 parallel) �
   - **S01-11** ✓ with caveats: SQLCipher via `sqlite3` build hooks (root-pubspec setting, S01-V005); spans 2.8× smaller and 2–4× faster to query than per-cell rows, delete slower; Drift typed batch 1.7–4.5× slower than raw. Stand-in data; SQLCipher proven from a standalone copy; iOS SQLCipher not compiled yet.
   - **S01-12** ✓ emulator only: recommends fog (a) holes d6 on GLSurfaceView/VD; `MEASURE.md` runbook; needs JDK 21 and a GMS exclusion (S01-V012, S01-V013).
   - **S01-13** ✓ recommends quadkey z20 with an exact dilation radius over H3 and z21.
-- **2026-10-09. W2 kickoff, part 1.** The owner ruled S01-V005 → **D-011**: the SQLCipher build-hook setting is in the root `pubspec.yaml`, and the in-workspace probe reports `cipher_version` 4.19.0 community with R*Tree on. Suite unchanged at 85. Nothing dispatched. See [the W2 kickoff note](notes/2026-10-09-W2-kickoff.md).
+- **2026-10-09. W2 kickoff, part 1.** The owner ruled S01-V005 → **D-011**: the SQLCipher build-hook setting is in the root `pubspec.yaml`, and the in-workspace probe reports `cipher_version` 4.19.0 community with R\*Tree on. Suite unchanged at 85. Nothing dispatched. See [the W2 kickoff note](notes/2026-10-09-W2-kickoff.md).
 - **Next:** the W2 kickoff, part 2 (`orchestrate-wave`): the owner connects the Android phone (S01-E1) and confirms the Mac + iPhone (S01-E2); then S01-20.
 
 ## Blockers that still bind

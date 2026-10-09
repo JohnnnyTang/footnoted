@@ -101,3 +101,10 @@ jobs:
       - run: flutter pub get
       - working-directory: spike/${{ matrix.app }}
         run: flutter build ios --debug --no-codesign
+      # D-011: the iOS bundle must carry SQLCipher, not upstream SQLite.
+      - name: SQLCipher linked (storage_bench)
+        if: matrix.app == 'storage_bench'
+        working-directory: spike/storage_bench
+        run: |
+          ls build/ios/iphoneos/Runner.app/Frameworks
+          find build/ios/iphoneos/Runner.app/Frameworks -iname '*sqlcipher*' | grep -q .
