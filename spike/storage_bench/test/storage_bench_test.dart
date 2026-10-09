@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -5,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:storage_bench/main.dart';
 import 'package:storage_bench/storage_bench.dart';
+
+import '../tool/summarize.dart';
 
 void main() {
   test('spansOf merges consecutive x per row', () {
@@ -76,6 +79,13 @@ void main() {
       expect(q.keys, containsAll(['densest/cell_rollups', 'long_leg']));
       expect((q['densest'] as Map).keys, ['8', '12', '16', '20']);
     }
+
+    final json = jsonDecode(jsonEncode(r)) as Map<String, dynamic>;
+    final md = summarize([json, json]);
+    expect(md, contains('runs: 2;'));
+    expect(md, contains('| B | raw | off |'));
+    expect(md, contains('F01.3 `cell_rollups`'));
+    expect(md, contains('z10 tile `densest/cell_rollups`'));
   });
 
   test('rollups cascade and the rollup tile query match by hand', () async {

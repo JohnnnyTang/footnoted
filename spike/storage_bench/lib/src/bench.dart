@@ -15,6 +15,7 @@ class BenchOptions {
     this.levels = const [8, 12, 16, 20],
     this.rollupLevels = const [16, 12, 8],
     this.queryReps = 5,
+    this.cacheKib,
   });
 
   final List<Layout> layouts;
@@ -30,6 +31,9 @@ class BenchOptions {
   /// z20 cells, each later one from the level before it.
   final List<int> rollupLevels;
   final int queryReps;
+
+  /// `PRAGMA cache_size` in KiB; null keeps the SQLite default (2,000 KiB).
+  final int? cacheKib;
 }
 
 typedef Log = void Function(String line);
@@ -185,7 +189,13 @@ Future<Map<String, Object?>> runBench(
         };
         final legPath = p.join(workDir, 'leg.db');
         _rm(legPath);
-        var st = await Store.open(driver, layout, legPath, cipher: cipher);
+        var st = await Store.open(
+          driver,
+          layout,
+          legPath,
+          cipher: cipher,
+          cacheKib: opts.cacheKib,
+        );
         var sw = Stopwatch()..start();
         await st.insert([leg]);
         r['leg_insert_ms'] = _ms(sw);
@@ -194,7 +204,13 @@ Future<Map<String, Object?>> runBench(
 
         final path = p.join(workDir, 'full.db');
         _rm(path);
-        st = await Store.open(driver, layout, path, cipher: cipher);
+        st = await Store.open(
+          driver,
+          layout,
+          path,
+          cipher: cipher,
+          cacheKib: opts.cacheKib,
+        );
         sw = Stopwatch()..start();
         await st.insert(ds.segments);
         r['full_insert_ms'] = _ms(sw);
@@ -240,7 +256,9 @@ Future<Map<String, Object?>> runBench(
               'SELECT count(*) FROM cell_rollups WHERE level = $l',
             );
             if (n != rollupRows['$l']) {
-              throw StateError('$tag rollup L$l: $n rows, want ${rollupRows['$l']}');
+              throw StateError(
+                '$tag rollup L$l: $n rows, want ${rollupRows['$l']}',
+              );
             }
             built['$l'] = {'build_ms': ms, 'rows': n, 'from': finer ?? 20};
             finer = l;
@@ -315,7 +333,11 @@ Future<Map<String, Object?>> runBench(
       'utc': DateTime.now().toUtc().toIso8601String(),
     },
     'sqlite': info,
-    'pragmas': {'journal_mode': 'wal', 'synchronous': 'NORMAL'},
+    'pragmas': {
+      'journal_mode': 'wal',
+      'synchronous': 'NORMAL',
+      'cache_size_kib': opts.cacheKib ?? 'default',
+    },
     'dataset': dsInfo,
     'results': results,
   };

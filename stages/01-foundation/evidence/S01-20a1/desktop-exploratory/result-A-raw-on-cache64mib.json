@@ -1,0 +1,176 @@
+{
+  "env": {
+    "runner": "desktop-cli",
+    "label": "win11 desktop AOT, A/raw/on, cache_size 64 MiB",
+    "build": "aot",
+    "os": "windows",
+    "os_version": "\"Windows 11 家庭版 中文版\" 10.0 (Build 26300)",
+    "dart": "3.13.5 (stable) (Tue Sep 29 01:00:52 2026 -0700) on \"windows_x64\"",
+    "cpus": 8,
+    "utc": "2026-10-09T14:54:23.971448Z"
+  },
+  "sqlite": {
+    "sqlite_version": "3.53.4",
+    "cipher_version": "4.19.0 community",
+    "rtree_compile_option": true,
+    "cipher_available": true,
+    "cipher_provider": "openssl",
+    "cipher_provider_version": "OpenSSL 4.0.3 29 Sep 2026",
+    "rtree_query_ids": [
+      1
+    ],
+    "journal_mode": "wal",
+    "synchronous": 1,
+    "file_header_is_plain_sqlite": false,
+    "file_header_hex": "75399a8f3fea5c04a53703dd4cbce6ec"
+  },
+  "pragmas": {
+    "journal_mode": "wal",
+    "synchronous": "NORMAL",
+    "cache_size_kib": 65536
+  },
+  "dataset": {
+    "source": "dataset.segcells.bin",
+    "segments": 2982,
+    "rows_cell_segment": 9714696,
+    "unique_cells": 1169242,
+    "spans": 458360,
+    "long_leg": {
+      "id": 564,
+      "label": "",
+      "rows": 899508,
+      "spans": 25599
+    },
+    "tiles_z10": {
+      "densest": [
+        229,
+        455
+      ],
+      "long_leg": [
+        225,
+        442
+      ]
+    },
+    "expected_tile_cells": {
+      "densest": {
+        "8": 1,
+        "12": 7,
+        "16": 606,
+        "20": 112296
+      },
+      "long_leg": {
+        "8": 1,
+        "12": 4,
+        "16": 200,
+        "20": 32747
+      }
+    },
+    "expected_rollup_rows": {
+      "16": 7610,
+      "12": 199,
+      "8": 18
+    }
+  },
+  "results": [
+    {
+      "layout": "A",
+      "driver": "raw",
+      "cipher": true,
+      "leg_insert_ms": 1092,
+      "full_insert_ms": 17389,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 3876,
+      "size_bytes": 278294528,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 747,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 2,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 749,
+        "bytes": 131072
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 464.93,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 473.407,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 649.298,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 540.819,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.149,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.012,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.011,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 76.831,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 79.3,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 81.328,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 85.03,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.148,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.014,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.012,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 963,
+      "file_header_is_plain_sqlite": false
+    }
+  ]
+}

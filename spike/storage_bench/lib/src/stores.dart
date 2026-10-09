@@ -26,7 +26,9 @@ class TileRange {
 const _testKeyHex =
     '2b7e151628aed2a6abf7158809cf4f3c762e7151f4a7c5c6b1a0dbe3b1e6c1f0';
 
-void applyPragmas(s3.Database db, {required bool cipher}) {
+/// [cacheKib] sets `PRAGMA cache_size = -cacheKib`; null keeps SQLite's
+/// default (2,000 KiB).
+void applyPragmas(s3.Database db, {required bool cipher, int? cacheKib}) {
   if (cipher) {
     db.execute("PRAGMA key = \"x'$_testKeyHex'\"");
     final v = db.select('PRAGMA cipher_version');
@@ -39,6 +41,7 @@ void applyPragmas(s3.Database db, {required bool cipher}) {
     throw StateError('journal_mode is $jm, expected wal');
   }
   db.execute('PRAGMA synchronous = NORMAL');
+  if (cacheKib != null) db.execute('PRAGMA cache_size = -$cacheKib');
 }
 
 abstract class Store {
@@ -47,10 +50,11 @@ abstract class Store {
     Layout layout,
     String path, {
     required bool cipher,
+    int? cacheKib,
   }) async {
     final s = d == Driver.raw
-        ? RawStore(layout, path, cipher)
-        : DriftStore(layout, path, cipher);
+        ? RawStore(layout, path, cipher, cacheKib)
+        : DriftStore(layout, path, cipher, cacheKib);
     await s.init();
     return s;
   }
@@ -132,16 +136,17 @@ List<int> _rollupArgs(TileRange t, int l) => [
 ];
 
 class RawStore implements Store {
-  RawStore(this.layout, this.path, this.cipher);
+  RawStore(this.layout, this.path, this.cipher, [this.cacheKib]);
   final Layout layout;
   final String path;
   final bool cipher;
+  final int? cacheKib;
   late final s3.Database db;
 
   @override
   Future<void> init() async {
     db = s3.sqlite3.open(path);
-    applyPragmas(db, cipher: cipher);
+    applyPragmas(db, cipher: cipher, cacheKib: cacheKib);
     if (db.select('SELECT 1 FROM sqlite_master LIMIT 1').isEmpty) {
       for (final s in ddlFor(layout)) {
         db.execute(s);
@@ -269,10 +274,11 @@ class RawStore implements Store {
 int _asInt(Object? v) => v is int ? v : int.parse('$v');
 
 class DriftStore implements Store {
-  DriftStore(this.layout, this.path, this.cipher);
+  DriftStore(this.layout, this.path, this.cipher, [this.cacheKib]);
   final Layout layout;
   final String path;
   final bool cipher;
+  final int? cacheKib;
   late final BenchDb db;
 
   static const _chunk = 20000;
@@ -282,7 +288,7 @@ class DriftStore implements Store {
     db = BenchDb(
       NativeDatabase(
         File(path),
-        setup: (raw) => applyPragmas(raw, cipher: cipher),
+        setup: (raw) => applyPragmas(raw, cipher: cipher, cacheKib: cacheKib),
       ),
       ddlFor(layout),
     );

@@ -15,6 +15,11 @@ Usage: dart run bin/storage_bench.dart [options]
   --probe            Only print the SQLite/SQLCipher probe and exit
   --stats            Only print the dataset counts and exit
   --label <text>     Free-text label stored in the result (machine, build)
+  --layout A|B       Only this layout (default: both)
+  --driver raw|drift Only this driver (default: both)
+  --cipher on|off    Only this cipher mode (default: both)
+  --cache-mb <n>     PRAGMA cache_size of n MiB (default: SQLite's 2,000 KiB)
+  --rollups <list>   cell_rollups levels, finest first (default: 16,12,8)
 ''';
 
 Future<void> main(List<String> args) async {
@@ -53,9 +58,28 @@ Future<void> main(List<String> args) async {
   );
   if (args.contains('--stats')) return;
 
+  final layout = opt('--layout', '');
+  final driver = opt('--driver', '');
+  final cipher = opt('--cipher', '');
+  final cacheMb = opt('--cache-mb', '');
   final result = await runBench(
     ds,
     p.join(out, 'db'),
+    opts: BenchOptions(
+      layouts: [
+        for (final l in Layout.values)
+          if (layout.isEmpty || l.label == layout) l,
+      ],
+      drivers: [
+        for (final d in Driver.values)
+          if (driver.isEmpty || d.name == driver) d,
+      ],
+      cipherModes: [if (cipher != 'off') true, if (cipher != 'on') false],
+      cacheKib: cacheMb.isEmpty ? null : int.parse(cacheMb) * 1024,
+      rollupLevels: [
+        for (final l in opt('--rollups', '16,12,8').split(',')) int.parse(l),
+      ],
+    ),
     env: {
       'runner': 'desktop-cli',
       'label': opt('--label', ''),
