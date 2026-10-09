@@ -482,6 +482,10 @@ class _BenchPageState extends State<BenchPage>
   }
 
   Future<Map<String, Object>> _runPass(int n) async {
+    // Every pass reads its tiles from the coverage source again, so the I/O
+    // is inside each measured pass and not only in the warm-up.
+    _fog?.clearCache();
+    _shown = {};
     await _goToStart();
     await Future<void>.delayed(const Duration(seconds: 2));
     _timings.clear();
