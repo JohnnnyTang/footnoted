@@ -67,6 +67,32 @@ abstract class Store {
   Future<int> statsCount();
   Future<void> vacuum();
   Future<void> close();
+
+  /// `PRAGMA cipher_version` on this store's own connection ('' if none).
+  Future<String> cipherVersion();
+
+  /// Runs one statement (the rollup builds). Drift runs it through
+  /// `customStatement`, as a Drift-based app would for set-based SQL.
+  Future<void> exec(String sql);
+
+  /// Number of level-[l] `cell_rollups` rows in [t].
+  Future<int> rollupTileCells(TileRange t, int l);
+
+  /// The first column of the first row of [sql], as an int.
+  Future<int> scalar(String sql);
+}
+
+List<int> _rollupTileArgs(TileRange t, int l) {
+  final sh = 20 - l;
+  final mask = (1 << l) - 1;
+  return [
+    l,
+    (t.x0 >> sh) << l,
+    ((t.x1 >> sh) << l) | mask,
+    mask,
+    t.y0 >> sh,
+    t.y1 >> sh,
+  ];
 }
 
 Map<int, int> _cellCounts(List<Segment> segs) {
@@ -220,7 +246,27 @@ class RawStore implements Store {
 
   @override
   Future<void> close() async => db.close();
+
+  @override
+  Future<String> cipherVersion() async {
+    final v = db.select('PRAGMA cipher_version');
+    return v.isEmpty ? '' : '${v.first.values.first}';
+  }
+
+  @override
+  Future<void> exec(String sql) async => db.execute(sql);
+
+  @override
+  Future<int> rollupTileCells(TileRange t, int l) async =>
+      db.select(rollupTileSql, _rollupTileArgs(t, l)).length;
+
+  @override
+  Future<int> scalar(String sql) async =>
+      _asInt(db.select(sql).first.values.first);
 }
+
+// Some pragmas (page_count under SQLCipher) come back as text.
+int _asInt(Object? v) => v is int ? v : int.parse('$v');
 
 class DriftStore implements Store {
   DriftStore(this.layout, this.path, this.cipher);
@@ -394,4 +440,33 @@ class DriftStore implements Store {
 
   @override
   Future<void> close() => db.close();
+
+  Future<List<Object?>> _first(String sql) async => [
+    for (final r in await db.customSelect(sql).get()) r.data.values.first,
+  ];
+
+  @override
+  Future<String> cipherVersion() async {
+    final v = await _first('PRAGMA cipher_version');
+    return v.isEmpty ? '' : '${v.first}';
+  }
+
+  @override
+  Future<void> exec(String sql) => db.customStatement(sql);
+
+  @override
+  Future<int> rollupTileCells(TileRange t, int l) async {
+    final rows = await db
+        .customSelect(
+          rollupTileSql,
+          variables: [
+            for (final a in _rollupTileArgs(t, l)) Variable.withInt(a),
+          ],
+        )
+        .get();
+    return rows.length;
+  }
+
+  @override
+  Future<int> scalar(String sql) async => _asInt((await _first(sql)).first);
 }
