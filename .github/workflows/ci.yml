@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, "stage/**"]
+    branches: [main, "stage/**", "s[0-9][0-9]/**"]
   pull_request:
   workflow_dispatch:
 
@@ -42,6 +42,11 @@ jobs:
       - name: app tests
         working-directory: app
         run: flutter test
+      # M0 spike (Stage 1 W1-W2): delete with spike/ at G1.
+      - name: spike tests
+        run: |
+          (cd spike/tracegen && dart test)
+          for p in storage_bench render_bench h3_eval; do (cd spike/$p && flutter test); done
 
   android:
     name: Android build
@@ -75,4 +80,24 @@ jobs:
           cache: true
       - run: flutter pub get
       - working-directory: app
+        run: flutter build ios --debug --no-codesign
+
+  # M0 spike (Stage 1 W1-W2): iOS compile check for the spike apps. Delete with spike/ at G1.
+  spike-ios:
+    name: Spike iOS build (${{ matrix.app }})
+    runs-on: macos-latest
+    needs: checks
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [storage_bench, render_bench, h3_eval]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - working-directory: spike/${{ matrix.app }}
         run: flutter build ios --debug --no-codesign

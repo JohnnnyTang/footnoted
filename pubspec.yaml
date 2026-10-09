@@ -11,3 +11,8 @@ workspace:
   - packages/footnoted_geo
   - packages/footnoted_data
   - tool
+  # M0 spike (Stage 1 W1-W2). Removed with spike/ at G1; tag m0-spike.
+  - spike/tracegen
+  - spike/storage_bench
+  - spike/render_bench
+  - spike/h3_eval
