@@ -62,8 +62,8 @@ Flutter + MapLibre + SQLite, all on-device, with no backend until sync or road r
 | Base tiles (online) | OpenFreeMap public instance | \[Decided\] | No keys, no limits. Attribution required (see Compliance). |
 | Base tiles (offline / self-host) | Protomaps PMTiles extracts | \[Decided\] | Region extracts via the `pmtiles` CLI, served from S3-compatible storage with byte-range reads. |
 | Map style | Custom dark style forked from OpenFreeMap dark or Protomaps dark | \[Decided\] | The unexplored look is the product identity. Strip it down; keep labels legible under fog. |
-| Local database | SQLite with R\*Tree index; SQLCipher for encryption | \[Decided\] | Driver: Drift \[Proposed\], confirmed or overturned by the M0 benchmark (D-003). |
-| Explored-area model | Discrete cell grid | \[Decided\] | Grid type \[Proposed\]: Web Mercator quadkey at z20. H3 is the alternative. See Core architecture. |
+| Local database | SQLite with R\*Tree index; SQLCipher for encryption | \[Decided\] | Driver: Drift \[Decided\], confirmed at G1-A; the coverage hot path uses prepared SQL through `customStatement` batches (D-016). |
+| Explored-area model | Discrete cell grid | \[Decided\] | Grid type \[Decided\]: Web Mercator quadkey at z20 (D-013). See Core architecture. |
 | Live location | `geolocator` + `flutter_foreground_task` | \[Decided\] | Free stack only. Tracelet (Apache 2.0) is the fallback if passive mode needs more. |
 | Photo metadata | `native_exif` or `exif` | \[Decided\] | Pick one during M2. |
 | Video metadata | Platform channels: `AVAsset` (iOS), `MediaMetadataRetriever` (Android) | \[Decided\] | Do not use FFmpegKit; it was retired in 2025. |
@@ -83,23 +83,23 @@ Raw points and user edits are the only stored truth; geometry, coverage, fog and
 
 ### Cell grid
 
-- **\[Proposed\]** Cells are Web Mercator tiles at **zoom 20**: about 38 m wide at the equator, 27 m at 45° latitude, 19 m at 60°. This aligns cells with map tiles and needs no dependency.
+- **\[Decided\]** (G1-A, D-013) Cells are Web Mercator tiles at **zoom 20**: about 38 m wide at the equator, 27 m at 45° latitude, 19 m at 60°. This aligns cells with map tiles and needs no dependency.
 - Note: an earlier conversation mentioned z16–z18 for 25–50 m cells. That was wrong — a z17 tile is about 305 m. Use z20 (or z21 for \~19 m) to hit the intended size.
 - Cell ID = `(x << 20) | y` packed into an int64.
-- **Alternative:** H3 hexagons via `h3_flutter`. Equal-area and prettier, but adds a native dependency and does not align with tiles. Decide in the M0 spike.
+- **Alternative (rejected at G1-A, D-013):** H3 hexagons via `h3_flutter`. Equal-area and prettier, but adds a native dependency, does not align with tiles, and has no run-length form or exact parents.
 
 ### Revealing cells
 
 1. Build the segment's display geometry from its anchors, vias and connection mode.
 2. Rasterise the geometry into z20 cells.
-3. Dilate by the buffer: radius in cells = ceil(buffer metres ÷ cell width at that latitude).
-4. Write one coverage record per (cell, segment). Never increment a bare counter.
+3. Dilate by the buffer: keep a cell at offset (dx, dy) cells when (dx² + dy²)·w² ≤ b², with b the buffer in metres and w the cell width at that row's latitude (the exact radius, per row; D-017 replaced `ceil(b ÷ w)`).
+4. Write one coverage record per (cell, segment), stored physically as per-segment run-length spans plus a derived per-cell count (D-014). Never increment a bare counter that has no segment behind it.
 
 Because reveal follows the line between points, sampling every few hundred metres reveals almost the same corridor as dense sampling.
 
 ### Rollups for low zoom
 
-Maintain coarser rollup levels (for example z16, z12, z8) that store "any child covered" and a count. Low-zoom rendering and country-level stats read rollups, not raw cells. Rollups are a rebuildable cache.
+Maintain coarser rollup levels (**z16, z12, z8**, D-015) that store "any child covered" and a count. Low-zoom rendering and country-level stats read rollups, not raw cells. Rollups are a rebuildable cache.
 
 ### Fog rendering
 
@@ -108,7 +108,7 @@ Maintain coarser rollup levels (for example z16, z12, z8) that store "any child 
 
 ### Storage risk to measure in M0
 
-A 1,000 km drive with a 500 m buffer touches roughly 700,000 z20 cells. One row per (cell, segment) may be too heavy for long legs. The spike must measure this. If it is too heavy, store coverage physically as run-length spans `(segment_id, y, x_start, x_end)` while keeping the logical (cell, segment) model and a derived per-cell stats table.
+A 1,000 km drive with a 500 m buffer touches roughly 700,000 z20 cells. One row per (cell, segment) may be too heavy for long legs. The spike must measure this. If it is too heavy, store coverage physically as run-length spans `(segment_id, y, x_start, x_end)` while keeping the logical (cell, segment) model and a derived per-cell stats table. **Settled at G1-A (D-014):** the real five-year dataset measured 265 MiB for per-cell rows against 30 MiB for spans, so coverage is stored as spans. The 1,033 km leg alone is 899,508 rows; the "~700,000" figure holds at the equator.
 
 ## Data model
 
@@ -135,7 +135,7 @@ Ship the full schema in M1, including tables whose UI comes much later (vias, co
 ### Derived (rebuildable cache)
 
 - **segment\_geometry** — the display polyline for a segment's current mode.
-- **cell\_coverage** — which segment revealed which cell.
+- **coverage\_spans** + **cell\_stats** — which segment revealed which cell, as per-segment run-length spans, plus the per-cell segment count that fog and statistics read (D-014).
 - **cell\_rollups** — coarse levels for low zoom and stats.
 
 ### Schema sketch
@@ -197,11 +197,19 @@ CREATE TABLE segment_vias (
   PRIMARY KEY (segment_id, after_seq, ord)
 );
 
-CREATE TABLE cell_coverage (
-  cell_id INTEGER NOT NULL, segment_id INTEGER NOT NULL,
-  PRIMARY KEY (cell_id, segment_id)
+-- Coverage per D-014 (G1-A): logical (cell, segment), physical spans.
+CREATE TABLE coverage_spans (
+  segment_id INTEGER NOT NULL, y INTEGER NOT NULL,
+  x_start INTEGER NOT NULL, x_end INTEGER NOT NULL,
+  PRIMARY KEY (segment_id, y, x_start)
 ) WITHOUT ROWID;
-CREATE INDEX cell_coverage_by_segment ON cell_coverage(segment_id);
+CREATE TABLE cell_stats (
+  cell_id INTEGER PRIMARY KEY, n INTEGER NOT NULL
+) WITHOUT ROWID;
+CREATE TABLE cell_rollups (
+  level INTEGER NOT NULL, cell_id INTEGER NOT NULL, n INTEGER NOT NULL,
+  PRIMARY KEY (level, cell_id)
+) WITHOUT ROWID;
 ```
 
 Every connection mode consumes the same input: member points with corrections applied, plus vias. That keeps user edits and mode independent — a user can add vias, then switch to road routing, and the route follows roads through their vias. Freehand drawing, if added, is a dense via list, not a new geometry type.
@@ -374,7 +382,7 @@ The most important test is the rebuild check: deleting every derived table and r
 
 - **Cell math:** rasterising and dilating segments at the equator, 60° latitude, across the antimeridian and near the poles.
 - **Coverage provenance:** add, edit and delete a segment; per-cell visit counts return exactly to their prior values.
-- **Rebuild idempotency:** drop `segment_geometry`, `cell_coverage` and rollups, rebuild, and compare.
+- **Rebuild idempotency:** drop `segment_geometry`, the coverage tables (`coverage_spans`, `cell_stats`) and rollups, rebuild, and compare.
 - **Segmentation:** fixtures for flights, long drives, overnight gaps, and two unrelated trips on consecutive days.
 - **Connection modes:** switching modes on a segment with vias preserves the vias; reset clears them.
 - **Corrections:** dragging an anchor never changes the original `points` row.
@@ -397,9 +405,9 @@ The most important test is the rebuild check: deleting every derived table and r
 
 Raise these with the owner when the milestone in brackets needs them; none blocks M0.
 
-- [ ] **Grid type and cell size** (M0): quadkey z20 (\~38 m) or z21 (\~19 m), or H3? Decide from spike results.
-- [ ] **Coverage storage** (M0): one row per (cell, segment), or run-length spans?
-- [x] **SQLite driver** (M1): Drift or raw `sqlite3` FFI? — **Drift, provisionally** (owner, 2026-10-08). The M0 spike benchmarks both on the bulk-coverage hot path and may overturn it. See [`decisions.md`](decisions.md) D-003.
+- [x] **Grid type and cell size** (M0): quadkey z20 (\~38 m) or z21 (\~19 m), or H3? — **Quadkey z20** (G1-A, 2026-10-10). D-013.
+- [x] **Coverage storage** (M0): one row per (cell, segment), or run-length spans? — **Run-length spans plus `cell_stats`; fog and stats read `cell_stats` and rollups only** (G1-A, 2026-10-10). D-014.
+- [x] **SQLite driver** (M1): Drift or raw `sqlite3` FFI? — **Drift, confirmed at G1-A** (2026-10-10), with the coverage hot path as prepared SQL through `customStatement` batches. See [`decisions.md`](decisions.md) D-016 (supersedes D-003).
 - [ ] **Default buffer distance** (M1): what the user sees before changing it, and the allowed range. — *Proposed in D-007, confirm at the Stage 1 W3 kickoff.*
 - [x] **Minimum OS versions** (M1): lowest iOS and Android versions to support. — **Flutter stable template defaults** (owner, 2026-10-08), raised only where a dependency requires it. D-004.
 - [ ] **App ID and bundle ID** (before first store upload): permanent once uploaded. — Temporary `com.example.footnoted` until then (D-006); the stores reject `com.example`, which makes an accidental upload impossible.

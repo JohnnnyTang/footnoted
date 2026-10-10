@@ -1,7 +1,7 @@
 # Stage 1 — Foundation (M0 spike + M1 foundation)
 
 **Stage opened:** 2026-10-08 (planning). **Branch:** `stage/01-foundation`, cut from `main` by the W1 kickoff.
-**State:** `ACTIVE`. W0 and W1 (spike harness) are merged. **W2 (S01-20a, no device) is next**; the phone is needed before W4 (D-012).
+**State:** `ACTIVE`. W0, W1 (spike harness) and W2 (real-dataset spike) are merged, and **G1-A is ruled** (D-013…D-017). **W3 is next**; the phone is needed before W4 (D-012).
 **Milestones:** M0 (performance spike, throwaway harness) + M1 (foundation), per [`HANDOFF.md`](../../docs/HANDOFF.md#milestones) and D-002.
 **Backlog:** [`VERIFICATION_BACKLOG.md`](VERIFICATION_BACKLOG.md) (`S01-V###`, `S01-E#`).
 **Waves:** [W0](W0-bootstrap.md) · [W1](W1-spike.md) · [W2](W2-measure-and-decide.md) · [W3](W3-building-blocks.md) · [W4](W4-pipeline-and-fog.md) · [W5](W5-integrate-and-verify.md)
@@ -37,16 +37,16 @@ Tags: **[auto]** an automated test in CI · **[device-A]** run by an agent on th
 
 ## The F01 contract (frozen at G1-A and G1-B, D-012)
 
-These are the cross-package seams W3–W5 build against. Until G1 they are **proposals**, and the spike may change any of them. Per D-012, G1-A freezes F01.1, F01.2, F01.3, F01.5 and F01.6; G1-B freezes F01.4.
+These are the cross-package seams W3–W5 build against. Per D-012, G1-A freezes F01.1, F01.2, F01.3, F01.5 and F01.6; G1-B freezes F01.4. **G1-A was ruled on 2026-10-10** ([G1-A note](notes/2026-10-10-G1A.md), D-013…D-017). A frozen clause changes only through a new D-row.
 
-| Clause | Proposal before G1 |
-| --- | --- |
-| F01.1 Cell ID | Web Mercator tile `(x, y)` at **z20**, `id = (x << 20) \| y`, stored in an int64. A level-`L` parent is `(x >> (20-L), y >> (20-L))` with the same packing at that level. |
-| F01.2 Coverage storage | Logical model: one record per **(cell, segment)**. Physical layout chosen by G1: per-cell rows `cell_coverage(cell_id, segment_id) WITHOUT ROWID` **or** spans `coverage_spans(segment_id, y, x_start, x_end)` plus a derived `cell_stats(cell_id, n_segments)`. |
-| F01.3 Rollups | Levels **16, 12, 8** (G1 may change them). `cell_rollups(level, cell_id, n_children_covered)`. A rebuildable cache. |
-| F01.4 `CoverageReader` | `Future<List<CellId>> coveredCells(TileId tile, int level)` plus `Stream<CoverageChange>` for invalidation. This is the only API the fog renderer may use to read coverage. |
-| F01.5 Display geometry | `SegmentGeometry { segmentId, mode, List<LatLng> vertices, bool inferred }`, derived from member points (corrections applied, latest wins) plus vias. `road` is unsupported in Stage 1 (falls back to `straight` with `inferred = true` and a log line). `none` → no line; the points reveal on their own. |
-| F01.6 Buffer | The effective buffer is `segments.buffer_m ?? default(kind)` (D-007). Dilation radius is computed **per cell row** from that row's latitude, because a long north–south leg changes cell width along its length. |
+| Clause | State | Contract |
+| --- | --- | --- |
+| F01.1 Cell ID | **FROZEN** (D-013) | Web Mercator tile `(x, y)` at **z20**, `id = (x << 20) \| y`, stored in an int64. A level-`L` parent is `(x >> (20-L), y >> (20-L))` with the same packing at that level. |
+| F01.2 Coverage storage | **FROZEN** (D-014) | Logical model: one record per **(cell, segment)**. Physical: `coverage_spans(segment_id, y, x_start, x_end)` WITHOUT ROWID, PK `(segment_id, y, x_start)`, plus a derived `cell_stats(cell_id, n)` WITHOUT ROWID (`n` = segments covering the cell). **Read rule:** fog and statistics read `cell_stats` and `cell_rollups` only, never `coverage_spans`; the spans serve the reveal writer, edits and deletes. Whether `coverage_spans` keeps a `(y, x_start)` index is S01-32's call (S01-V024). |
+| F01.3 Rollups | **FROZEN** (D-015) | Levels **16, 12, 8**. `cell_rollups(level, cell_id, n)` WITHOUT ROWID, PK `(level, cell_id)`, `n` = covered z20 cells under the parent. Built finest-first from `cell_stats`; rebuilt, not maintained in place. G1-B may add a level as a rebuild. |
+| F01.4 `CoverageReader` | proposal until G1-B | `Future<List<CellId>> coveredCells(TileId tile, int level)` plus `Stream<CoverageChange>` for invalidation. This is the only API the fog renderer may use to read coverage. It reads per the F01.2 read rule, off the UI isolate (S01-V022, S01-V028). |
+| F01.5 Display geometry | **FROZEN** (G1-A, unchanged) | `SegmentGeometry { segmentId, mode, List<LatLng> vertices, bool inferred }`, derived from member points (corrections applied, latest wins) plus vias. `road` is unsupported in Stage 1 (falls back to `straight` with `inferred = true` and a log line). `none` → no line; the points reveal on their own. |
+| F01.6 Buffer | **FROZEN** (D-017) | The effective buffer is `segments.buffer_m ?? default(kind)` (D-007). A cell at offset (dx, dy) is kept when (dx² + dy²)·w² ≤ b², with w the cell width at **that row's latitude**: the exact radius, computed per cell row, because a long north–south leg changes cell width along its length. |
 
 ## Waves at a glance
 
@@ -118,6 +118,12 @@ G1 is split in two (D-012): the owner's phone is needed before W4, not before W3
 - **2026-10-09. Owner ruling D-012:** G1 splits into **G1-A** ((a)–(d), before W3) and **G1-B** ((e) + criterion 2 on devices, before W4). S01-20 splits into **S01-20a** (W2, no device) and **S01-20b** (new wave **W2b**, after W3). `spike/` stays until G1-B. The W2, W3 and W4 files and the waves table are amended.
 - **Next (a new session):** the W2 kickoff, part 2 (`orchestrate-wave`): rebase, re-run the suite, then dispatch **S01-20a alone** (brief: [W2 amendment](W2-measure-and-decide.md#amendment-2026-10-09-d-012)). No device is needed. At the W2 close the owner rules **G1-A**, then W3.
 - **2026-10-09. W2 kickoff, part 2.** Nothing to rebase; baseline 85 green. At the owner's request S01-20a is split into **S01-20a1** (real dataset through storage + G1-A inputs) and **S01-20a2** (DB-backed fog, Mexico City pan, render step); seams in `3473a2d` (`spike/device_run/` driver, `sqlite3` in render_bench). Both dispatched in parallel. See [the kickoff note](notes/2026-10-09-W2-kickoff.md#part-2-2026-10-09-baseline-split-seams-dispatch).
+- **2026-10-10. W2 merged; G1-A ruled.** [Close note](notes/2026-10-10-W2-close.md). Suite on the merged tree: 96 tests green (+11 on 85), analyze/format clean, check_deps 115 packages. No exit criterion is decided; all numbers are desktop or emulator.
+  - **S01-20a1** ✓ seed-42 hashes = S01-10; every storage metric on the real dataset (desktop AOT + emulator release, 3 runs each); B 30.0 MiB vs A 265.4 MiB, full insert 2.4 s vs 95 s; spans are too slow to read fog from (1.2–1.7 s for the home tile), `cell_stats` 41–52 ms, rollups 0.15 ms; Drift via `customStatement` 1.06× raw; storage step of the device script.
+  - **S01-20a2** ✓ fog from a keyed SQLCipher DB (B default, A switch) on a worker isolate; Mexico City + corridor pan; render step + `criterion2.md`; emulator (no pass/fail): ~51 fps with DB, memory or no fog alike, but one fog update per z10 pass waits 4.8–6.2 s on spans (S01-V028).
+  - **G1-A** ruled on the orchestrator's recommendations (owner's standing instruction): [G1-A note](notes/2026-10-10-G1A.md), D-013 quadkey z20, D-014 spans + `cell_stats` with the read rule, D-015 rollups 16/12/8, D-016 Drift confirmed, D-017 exact radius. F01.1–F01.3, F01.5, F01.6 **FROZEN**.
+  - The close's full-driver integration run was stopped by the owner after the storage step; the end-to-end check moves to S01-20b (S01-V032).
+- **Next:** the **W3 kickoff** (`orchestrate-wave`), with D-007 to confirm (S01-E3). Then W2b (needs S01-E1), then G1-B, then W4.
 
 ## Blockers that still bind
 

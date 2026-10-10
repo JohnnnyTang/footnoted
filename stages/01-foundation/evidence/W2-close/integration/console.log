@@ -1,0 +1,141 @@
+device_run: generating seed-42 dataset in D:\code\foot-noted/spike/out
+trace: 2982 segments, 115312 points, sha256 c7d51e69bd57c92bd8f590f1965cf04ecbf47f2e54a85b556cb8e2e587ea4742 (434 ms)
+z20: 1169242 unique cells, 9714696 (cell, segment) rows, 458360 segment spans, 36590 union spans (7209 ms, reveal 1996 ms)
+  cells sha256 4a893df6986893239134cc8e78753cce7fa4eebfc5ee7e548f44c2899e68c1c2
+  segcells sha256 22739288fc0633530a2436c0f1573de9d931984e27daceb1e0119fb09419b7c2
+device_run: {
+  "serial": "emulator-5554",
+  "manufacturer": "unknown",
+  "model": "Android SDK built for x86_64",
+  "android": "16",
+  "sdk": "36",
+  "abi": "x86_64",
+  "emulator": true,
+  "utc": "2026-10-10T02:25:47.166077Z"
+}
+device_run: step storage
+storage: building the release APK (JAVA_HOME=D:/software/jdk-21.0.12.1+1)
+Resolving dependencies in `D:\code\foot-noted`...
+Downloading packages...
+  _fe_analyzer_shared 103.0.0 (109.0.0 available)
+  analyzer 13.3.0 (14.5.0 available)
+  archive 4.3.0 (4.4.0 available)
+  build_runner 2.16.1 (2.16.2 available)
+  cupertino_icons 1.0.9 (2.0.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  package_config 2.2.0 (3.0.0 available)
+  source_gen 4.2.4 (4.3.0 available)
+  test 1.31.1 (1.33.0 available)
+  test_api 0.7.12 (0.7.15 available)
+  test_core 0.6.18 (0.6.21 available)
+Got dependencies in `D:\code\foot-noted`!
+11 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleRelease'...                        
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 1456 bytes (99.9% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Running Gradle task 'assembleRelease'...                           40.8s
+√ Built build\app\outputs\flutter-apk\app-release.apk (59.3MB)
+storage: pushing D:\code\foot-noted/spike/out/dataset.segcells.bin
+storage: run 1/3
+  BENCH work dir /data/user/0/com.example.footnoted.spike.storage_bench/files/bench
+  BENCH probe: {sqlite_version: 3.53.4, cipher_version: 4.19.0 community, rtree_compile_option: true, cipher_available: true, cipher_provider: openssl, cipher_pro
+  BENCH dataset: {source: dataset.segcells.bin, segments: 2982, rows_cell_segment: 9714696, unique_cells: 1169242, spans: 458360, long_leg: {id: 564, label: , row
+  BENCH run A/raw/cipher=true
+  BENCH done A/raw/cipher=true: {layout: A, driver: raw, cipher: true, leg_insert_ms: 1055, full_insert_ms: 78696, cipher_version: 4.19.0 community, vacuum_ms: 17
+  BENCH run A/drift/cipher=true
+  BENCH done A/drift/cipher=true: {layout: A, driver: drift, cipher: true, leg_insert_ms: 3021, full_insert_ms: 98927, cipher_version: 4.19.0 community, vacuum_ms
+  BENCH run B/raw/cipher=true
+  BENCH done B/raw/cipher=true: {layout: B, driver: raw, cipher: true, leg_insert_ms: 1020, full_insert_ms: 3599, cipher_version: 4.19.0 community, vacuum_ms: 353
+  BENCH run B/drift/cipher=true
+  BENCH done B/drift/cipher=true: {layout: B, driver: drift, cipher: true, leg_insert_ms: 4395, full_insert_ms: 9925, cipher_version: 4.19.0 community, vacuum_ms:
+  BENCH run A/raw/cipher=false
+  BENCH done A/raw/cipher=false: {layout: A, driver: raw, cipher: false, leg_insert_ms: 861, full_insert_ms: 25935, cipher_version: 4.19.0 community, vacuum_ms: 1
+  BENCH run A/drift/cipher=false
+  BENCH done A/drift/cipher=false: {layout: A, driver: drift, cipher: false, leg_insert_ms: 2978, full_insert_ms: 48671, cipher_version: 4.19.0 community, vacuum_
+  BENCH run B/raw/cipher=false
+  BENCH done B/raw/cipher=false: {layout: B, driver: raw, cipher: false, leg_insert_ms: 880, full_insert_ms: 4014, cipher_version: 4.19.0 community, vacuum_ms: 27
+  BENCH run B/drift/cipher=false
+  BENCH done B/drift/cipher=false: {layout: B, driver: drift, cipher: false, leg_insert_ms: 4355, full_insert_ms: 9606, cipher_version: 4.19.0 community, vacuum_m
+storage: pulled D:\code\foot-noted/stages/01-foundation/evidence/W2-close/integration/storage/result-run1.json after 565 s
+storage: run 1: 8 configurations, sqlite {"sqlite_version":"3.53.4","cipher_version":"4.19.0 community","rtree_compile_option":true,"cipher_available":true,"cipher_provider":"openssl","cipher_provider_version":"OpenSSL 4.0.3 29 Sep 2026","rtree_query_ids":[1],"journal_mode":"wal","synchronous":1,"file_header_is_plain_sqlite":false,"file_header_hex":"2fd2bccc2ec29f441f6814635a70e363"}
+storage: run 2/3
+  BENCH work dir /data/user/0/com.example.footnoted.spike.storage_bench/files/bench
+  BENCH probe: {sqlite_version: 3.53.4, cipher_version: 4.19.0 community, rtree_compile_option: true, cipher_available: true, cipher_provider: openssl, cipher_pro
+  BENCH dataset: {source: dataset.segcells.bin, segments: 2982, rows_cell_segment: 9714696, unique_cells: 1169242, spans: 458360, long_leg: {id: 564, label: , row
+  BENCH run A/raw/cipher=true
+  BENCH done A/raw/cipher=true: {layout: A, driver: raw, cipher: true, leg_insert_ms: 946, full_insert_ms: 73299, cipher_version: 4.19.0 community, vacuum_ms: 301
+  BENCH run A/drift/cipher=true
+  BENCH done A/drift/cipher=true: {layout: A, driver: drift, cipher: true, leg_insert_ms: 3262, full_insert_ms: 95911, cipher_version: 4.19.0 community, vacuum_ms
+  BENCH run B/raw/cipher=true
+  BENCH done B/raw/cipher=true: {layout: B, driver: raw, cipher: true, leg_insert_ms: 1069, full_insert_ms: 3820, cipher_version: 4.19.0 community, vacuum_ms: 379
+  BENCH run B/drift/cipher=true
+  BENCH done B/drift/cipher=true: {layout: B, driver: drift, cipher: true, leg_insert_ms: 4898, full_insert_ms: 9330, cipher_version: 4.19.0 community, vacuum_ms:
+  BENCH run A/raw/cipher=false
+  BENCH done A/raw/cipher=false: {layout: A, driver: raw, cipher: false, leg_insert_ms: 929, full_insert_ms: 25318, cipher_version: 4.19.0 community, vacuum_ms: 1
+  BENCH run A/drift/cipher=false
+  BENCH done A/drift/cipher=false: {layout: A, driver: drift, cipher: false, leg_insert_ms: 3210, full_insert_ms: 49570, cipher_version: 4.19.0 community, vacuum_
+  BENCH run B/raw/cipher=false
+  BENCH done B/raw/cipher=false: {layout: B, driver: raw, cipher: false, leg_insert_ms: 908, full_insert_ms: 3469, cipher_version: 4.19.0 community, vacuum_ms: 29
+  BENCH run B/drift/cipher=false
+  BENCH done B/drift/cipher=false: {layout: B, driver: drift, cipher: false, leg_insert_ms: 4751, full_insert_ms: 9621, cipher_version: 4.19.0 community, vacuum_m
+  BENCH done; saved to /data/user/0/com.example.footnoted.spike.storage_bench/app_flutter and /storage/emulated/0/Android/data/com.example.footnoted.spike.storage
+storage: pulled D:\code\foot-noted/stages/01-foundation/evidence/W2-close/integration/storage/result-run2.json after 539 s
+storage: run 2: 8 configurations, sqlite {"sqlite_version":"3.53.4","cipher_version":"4.19.0 community","rtree_compile_option":true,"cipher_available":true,"cipher_provider":"openssl","cipher_provider_version":"OpenSSL 4.0.3 29 Sep 2026","rtree_query_ids":[1],"journal_mode":"wal","synchronous":1,"file_header_is_plain_sqlite":false,"file_header_hex":"1dd324ffa88651f47f330a8a83e8c30b"}
+storage: run 3/3
+  BENCH work dir /data/user/0/com.example.footnoted.spike.storage_bench/files/bench
+  BENCH probe: {sqlite_version: 3.53.4, cipher_version: 4.19.0 community, rtree_compile_option: true, cipher_available: true, cipher_provider: openssl, cipher_pro
+  BENCH dataset: {source: dataset.segcells.bin, segments: 2982, rows_cell_segment: 9714696, unique_cells: 1169242, spans: 458360, long_leg: {id: 564, label: , row
+  BENCH run A/raw/cipher=true
+  BENCH done A/raw/cipher=true: {layout: A, driver: raw, cipher: true, leg_insert_ms: 1138, full_insert_ms: 74331, cipher_version: 4.19.0 community, vacuum_ms: 36
+  BENCH run A/drift/cipher=true
+  BENCH done A/drift/cipher=true: {layout: A, driver: drift, cipher: true, leg_insert_ms: 2994, full_insert_ms: 98803, cipher_version: 4.19.0 community, vacuum_ms
+  BENCH run B/raw/cipher=true
+  BENCH done B/raw/cipher=true: {layout: B, driver: raw, cipher: true, leg_insert_ms: 868, full_insert_ms: 3760, cipher_version: 4.19.0 community, vacuum_ms: 362,
+  BENCH run B/drift/cipher=true
+  BENCH done B/drift/cipher=true: {layout: B, driver: drift, cipher: true, leg_insert_ms: 4371, full_insert_ms: 10244, cipher_version: 4.19.0 community, vacuum_ms
+  BENCH run A/raw/cipher=false
+  BENCH done A/raw/cipher=false: {layout: A, driver: raw, cipher: false, leg_insert_ms: 1080, full_insert_ms: 26264, cipher_version: 4.19.0 community, vacuum_ms: 
+  BENCH run A/drift/cipher=false
+  BENCH done A/drift/cipher=false: {layout: A, driver: drift, cipher: false, leg_insert_ms: 3247, full_insert_ms: 51202, cipher_version: 4.19.0 community, vacuum_
+  BENCH run B/raw/cipher=false
+  BENCH done B/raw/cipher=false: {layout: B, driver: raw, cipher: false, leg_insert_ms: 869, full_insert_ms: 3348, cipher_version: 4.19.0 community, vacuum_ms: 25
+  BENCH run B/drift/cipher=false
+  BENCH done B/drift/cipher=false: {layout: B, driver: drift, cipher: false, leg_insert_ms: 5156, full_insert_ms: 9351, cipher_version: 4.19.0 community, vacuum_m
+  BENCH done; saved to /data/user/0/com.example.footnoted.spike.storage_bench/app_flutter and /storage/emulated/0/Android/data/com.example.footnoted.spike.storage
+storage: pulled D:\code\foot-noted/stages/01-foundation/evidence/W2-close/integration/storage/result-run3.json after 555 s
+storage: run 3: 8 configurations, sqlite {"sqlite_version":"3.53.4","cipher_version":"4.19.0 community","rtree_compile_option":true,"cipher_available":true,"cipher_provider":"openssl","cipher_provider_version":"OpenSSL 4.0.3 29 Sep 2026","rtree_query_ids":[1],"journal_mode":"wal","synchronous":1,"file_header_is_plain_sqlite":false,"file_header_hex":"47cffa7cf9adb384108434ff1ab4d412"}
+storage: wrote D:\code\foot-noted/stages/01-foundation/evidence/W2-close/integration/storage/summary.md
+device_run: step render
+render: building the profile APK for android-x64 (JAVA_HOME=D:/software/jdk-21.0.12.1+1)
+Resolving dependencies in `D:\code\foot-noted`...
+Downloading packages...
+  _fe_analyzer_shared 103.0.0 (109.0.0 available)
+  analyzer 13.3.0 (14.5.0 available)
+  archive 4.3.0 (4.4.0 available)
+  build_runner 2.16.1 (2.16.2 available)
+  cupertino_icons 1.0.9 (2.0.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  package_config 2.2.0 (3.0.0 available)
+  source_gen 4.2.4 (4.3.0 available)
+  test 1.31.1 (1.33.0 available)
+  test_api 0.7.12 (0.7.15 available)
+  test_core 0.6.18 (0.6.21 available)
+Got dependencies in `D:\code\foot-noted`!
+11 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleProfile'...                        
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 1328 bytes (99.9% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+注: 某些输入文件使用或覆盖了已过时的 API。
+注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+注: 某些输入文件使用了未经检查或不安全的操作。
+注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+Running Gradle task 'assembleProfile'...                           47.1s
+√ Built build\app\outputs\flutter-apk\app-profile.apk (59.4MB)
+render: installing D:\code\foot-noted/spike/render_bench/build/app/outputs/flutter-apk/app-profile.apk
+Performing Streamed Install
+Success
+render: dataset.segcells.bin already on the device (77765280 bytes)
+render: dataset.segcells.json already on the device (158 bytes)
+render: run 1/13: z10 holes VD layout B
+Running build hooks...Running build hooks...started pid 28659 z10 holes texture=false fog=true source=db layout=B → D:\code\foot-noted/stages/01-foundation/evidence/W2-close/integration/render/runs/2026-10-10T025527.341080Z_z10_holes_vd_B
+data ready
