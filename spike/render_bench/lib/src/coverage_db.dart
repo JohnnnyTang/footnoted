@@ -68,7 +68,14 @@ const _testKeyHex =
 
 Database _open(String path) {
   final db = sqlite3.open(path);
-  db.execute("PRAGMA key = \"x'$_testKeyHex'\"");
+  try {
+    db.execute("PRAGMA key = \"x'$_testKeyHex'\"");
+  } on SqliteException catch (e) {
+    // The exception's causing statement holds the key; never let it reach a
+    // log line.
+    db.close();
+    throw StateError('PRAGMA key failed (sqlite code ${e.resultCode})');
+  }
   final v = db.select('PRAGMA cipher_version');
   if (v.isEmpty || '${v.first.values.first}'.isEmpty) {
     db.close();
