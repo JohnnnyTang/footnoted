@@ -1,7 +1,7 @@
 # Stage 1 — Foundation (M0 spike + M1 foundation)
 
 **Stage opened:** 2026-10-08 (planning). **Branch:** `stage/01-foundation`, cut from `main` by the W1 kickoff.
-**State:** `ACTIVE`. W0, W1 (spike harness) and W2 (real-dataset spike) are merged, and **G1-A is ruled** (D-013…D-017). **W3 is next**; the phone is needed before W4 (D-012).
+**State:** `ACTIVE`. W0, W1 (spike harness) and W2 (real-dataset spike) are merged, and **G1-A is ruled** (D-013…D-017). **W3 is dispatched** (2026-10-10); the phone is needed before W4 (D-012).
 **Milestones:** M0 (performance spike, throwaway harness) + M1 (foundation), per [`HANDOFF.md`](../../docs/HANDOFF.md#milestones) and D-002.
 **Backlog:** [`VERIFICATION_BACKLOG.md`](VERIFICATION_BACKLOG.md) (`S01-V###`, `S01-E#`).
 **Waves:** [W0](W0-bootstrap.md) · [W1](W1-spike.md) · [W2](W2-measure-and-decide.md) · [W3](W3-building-blocks.md) · [W4](W4-pipeline-and-fog.md) · [W5](W5-integrate-and-verify.md)
@@ -124,9 +124,11 @@ G1 is split in two (D-012): the owner's phone is needed before W4, not before W3
   - **G1-A** ruled on the orchestrator's recommendations (owner's standing instruction): [G1-A note](notes/2026-10-10-G1A.md), D-013 quadkey z20, D-014 spans + `cell_stats` with the read rule, D-015 rollups 16/12/8, D-016 Drift confirmed, D-017 exact radius. F01.1–F01.3, F01.5, F01.6 **FROZEN**.
   - The close's full-driver integration run was stopped by the owner after the storage step; the end-to-end check moves to S01-20b (S01-V032).
 - **Next:** the **W3 kickoff** (`orchestrate-wave`), with D-007 to confirm (S01-E3). Then W2b (needs S01-E1), then G1-B, then W4.
+- **2026-10-10. W3 kickoff.** Baseline 96 green on `3e726c0`. Rulings under the standing instruction: **D-018** confirms D-007 (100 m local, 25 m – 2 km; transit endpoints only; closes S01-E3), **D-019** Riverpod + go_router, **D-020** JDK 21 for Android builds (closes S01-V013). Seams in `3da7663`: all W3 dependencies, frozen `footnoted_geo` `types.dart`, `map_credits.dart`, `AppMetaStore`, the `FootMapView` placeholder, l10n skeleton (generated output committed), CI Java 21. See [the kickoff note](notes/2026-10-10-W3-kickoff.md). S01-30, S01-31, S01-32, S01-33 dispatched in parallel.
+- **Next:** the **W3 close** (`orchestrate-wave`) once all four sessions report; merge order S01-31 → S01-32 → S01-30 → S01-33. Then W2b (needs S01-E1), then G1-B, then W4.
 
 ## Blockers that still bind
 
 - `S01-E1` — **Owner's Android test phone** (model, Android version, RAM, USB debugging) for **W2b** (S01-20b), which must close before **W4** (D-012). Does not block W2 or W3.
 - `S01-E2` — **Owner's Mac + older iPhone** with Xcode, for S01-21 (W2b) and S01-51. Does not block W2 or W3.
-- D-007 (default buffer) awaits owner confirmation at the W3 kickoff.
+- ~~D-007 (default buffer) awaits owner confirmation at the W3 kickoff.~~ Confirmed as D-018 at the W3 kickoff (2026-10-10).
