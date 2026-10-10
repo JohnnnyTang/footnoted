@@ -121,7 +121,9 @@ Future<void> main(List<String> args) async {
     source,
     '--es',
     'label',
-    label,
+    // `adb shell` joins its arguments into one device shell command line, so
+    // a label with spaces or parentheses must be quoted for that shell.
+    "'${label.replaceAll("'", r"'\''")}'",
   ]);
   final pid = (await adb(['shell', 'pidof', pkg])).trim().split(' ').first;
   if (pid.isEmpty) fail(dir, 'ERROR', 'app did not start', 1);
