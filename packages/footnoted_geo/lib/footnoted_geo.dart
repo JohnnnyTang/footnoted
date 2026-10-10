@@ -4,6 +4,7 @@ library;
 export 'src/dilate.dart';
 export 'src/rasterize.dart';
 export 'src/tile_math.dart';
+export 'src/types.dart';
 
 /// Package identity, used by the smoke test until real APIs land.
 const packageName = 'footnoted_geo';

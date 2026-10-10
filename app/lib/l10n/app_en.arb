@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "FootNoted",
+  "@appTitle": {
+    "description": "The app name. Brand: capital N, never an asterisk."
+  }
+}

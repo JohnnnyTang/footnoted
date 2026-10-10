@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'tile_math.dart';
+import 'types.dart';
 
 /// How consecutive points of a polyline are joined.
 enum JoinMode {

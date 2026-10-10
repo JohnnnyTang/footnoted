@@ -11,9 +11,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.8
-  footnoted_geo: any
+  flutter_riverpod: ^3.4.3
+  flutter_secure_storage: ^11.2.0
   footnoted_data: any
+  footnoted_geo: any
+  go_router: ^18.0.2
+  intl: ^0.20.3
+  maplibre_gl: ^0.27.1
+  package_info_plus: ^10.2.2
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:
@@ -22,3 +31,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
+  assets:
+    - assets/map/

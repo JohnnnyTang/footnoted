@@ -8,7 +8,7 @@ Rows are appended by the orchestrator at merge, from each session note's `## Bac
 | --- | --- | --- | --- |
 | S01-E1 | The owner's **mid-range Android phone** connected over USB with debugging on. Record the model, Android version and RAM. | W2 (S01-20), W5 (S01-51) | open |
 | S01-E2 | The owner's **Mac with Xcode + an older iPhone** (record the model and iOS version) for the iOS runbooks. Apple personal team signing is enough. | W2 (S01-21), W5 (S01-51) | open |
-| S01-E3 | Owner confirmation of **D-007** (default buffer 100 m local, range 25 m – 2 km). | W3 kickoff | open |
+| ~~S01-E3~~ | ~~Owner confirmation of **D-007** (default buffer 100 m local, range 25 m – 2 km).~~ | W3 kickoff | **closed 2026-10-10**: confirmed as D-018 under the owner's standing instruction |
 
 ## Verification rows (`S01-V###`)
 
@@ -26,7 +26,7 @@ Rows are appended by the orchestrator at merge, from each session note's `## Bac
 | S01-V010 | Build-time network: the `sqlite3` hook downloads prebuilt binaries from `github.com` (sha256-pinned). Accept, mirror (`url_pattern`) or build from source; list it as a build-time host in `docs/network-hosts.md`. (was S01-V11f) | S01-11 | — | open |
 | S01-V011 | Exit criterion 2 on the owner's Android phone per `spike/render_bench/MEASURE.md` §4 with S01-10's `dataset.cells.bin`: (a) holes d6 on GLSurfaceView/VD, plus (b) and TextureView controls. Re-point `panWaypoints` at S01-10's home city (Mexico City) and corridor first. (was S01-V12a) | S01-12 | G1(e), exit 2 | open: **pan re-pointed and DB-backed 2026-10-10** (S01-20a2; emulator only); the phone run remains (S01-20b) |
 | S01-V012 | Invariant 1: `maplibre_gl`'s Android module pulls `play-services-base`/`-location`. Exclude `com.google.android.gms` in `app/android` (S01-33) and add a CI guard on the release runtime classpath (S01-42); `check_deps` only sees Dart. (was S01-V12b) | S01-12 | exit 12 | open |
-| S01-V013 | CI Android job needs Java 21 once `app/` depends on `maplibre_gl` ≥ 0.27.1; record JDK 21 next to D-010. (was S01-V12c) | S01-12 | exit 5 | open |
+| ~~S01-V013~~ | ~~CI Android job needs Java 21 once `app/` depends on `maplibre_gl` ≥ 0.27.1; record JDK 21 next to D-010. (was S01-V12c)~~ | S01-12 | exit 5 | **closed 2026-10-10**: W3 kickoff, CI `java-version: "21"`, D-020; local `flutter build apk --debug` with JDK 21 ✓ |
 | S01-V014 | MapLibre merges `ACCESS_FINE/COARSE_LOCATION` into the manifest: declare deliberately or `tools:node="remove"` until recording; the rationale rule applies. (was S01-V12d) | S01-12 | — | open |
 | S01-V015 | Windows dev box: `kotlin.incremental=false` in `app/android/gradle.properties` (pub cache on C:, repo on D:), or move the pub cache. (was S01-V12e) | S01-12 | — | open |
 | S01-V016 | iOS exit criterion 2: the owner runs `MEASURE.md` §6 (Instruments → Animation Hitches) on the older iPhone, both strategies. (was S01-V12f) | S01-12 | exit 2 | open |

@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'types.dart';
+
 /// Latitude limit of the square Web Mercator world.
 const double maxMercatorLatitude = 85.05112878;
 
@@ -14,23 +16,6 @@ const int tilePixelShift = 8;
 
 const double earthRadiusMeters = 6378137.0;
 const double earthCircumferenceMeters = 2 * math.pi * earthRadiusMeters;
-
-class LatLng {
-  const LatLng(this.lat, this.lon);
-
-  final double lat;
-  final double lon;
-
-  @override
-  bool operator ==(Object other) =>
-      other is LatLng && other.lat == lat && other.lon == lon;
-
-  @override
-  int get hashCode => Object.hash(lat, lon);
-
-  @override
-  String toString() => 'LatLng($lat, $lon)';
-}
 
 double clampLatitude(double lat) =>
     lat.clamp(-maxMercatorLatitude, maxMercatorLatitude).toDouble();
@@ -132,25 +117,4 @@ int parentCell(int id, int parentLevel, [int level = cellLevel]) {
   final shift = level - parentLevel;
   return ((cellX(id, level) >> shift) << parentLevel) |
       (cellY(id, level) >> shift);
-}
-
-/// A level-20 cell ID (F01.1). Other levels use the functions above.
-extension type const CellId(int value) {
-  CellId.fromTile(int x, int y) : value = packCell(x, y);
-
-  CellId.fromLatLng(LatLng p)
-    : value = packCell(
-        lonToTileX(p.lon, cellLevel),
-        latToTileY(p.lat, cellLevel),
-      );
-
-  int get x => cellX(value);
-  int get y => cellY(value);
-
-  /// The ancestor at [level], packed with shift [level].
-  int parentAt(int level) => parentCell(value, level);
-
-  LatLng get center => tileToLatLng(x + 0.5, y + 0.5, cellLevel);
-
-  double get widthMeters => rowWidthMeters(y, cellLevel);
 }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:footnoted_geo/footnoted_geo.dart';
+import 'package:footnoted_geo/footnoted_geo.dart' hide SegmentKind;
 
 import 'src/model.dart';
 import 'src/output.dart';

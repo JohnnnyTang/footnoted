@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:footnoted_geo/footnoted_geo.dart';
+import 'package:footnoted_geo/footnoted_geo.dart' hide SegmentKind;
 import 'package:test/test.dart';
 import 'package:tracegen/tracegen.dart';
 

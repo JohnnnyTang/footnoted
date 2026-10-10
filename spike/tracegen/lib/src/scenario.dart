@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:footnoted_geo/footnoted_geo.dart';
+import 'package:footnoted_geo/footnoted_geo.dart' hide SegmentKind;
 
 import 'model.dart';
 import 'paths.dart';

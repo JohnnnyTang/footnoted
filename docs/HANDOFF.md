@@ -408,7 +408,7 @@ Raise these with the owner when the milestone in brackets needs them; none block
 - [x] **Grid type and cell size** (M0): quadkey z20 (\~38 m) or z21 (\~19 m), or H3? — **Quadkey z20** (G1-A, 2026-10-10). D-013.
 - [x] **Coverage storage** (M0): one row per (cell, segment), or run-length spans? — **Run-length spans plus `cell_stats`; fog and stats read `cell_stats` and rollups only** (G1-A, 2026-10-10). D-014.
 - [x] **SQLite driver** (M1): Drift or raw `sqlite3` FFI? — **Drift, confirmed at G1-A** (2026-10-10), with the coverage hot path as prepared SQL through `customStatement` batches. See [`decisions.md`](decisions.md) D-016 (supersedes D-003).
-- [ ] **Default buffer distance** (M1): what the user sees before changing it, and the allowed range. — *Proposed in D-007, confirm at the Stage 1 W3 kickoff.*
+- [x] **Default buffer distance** (M1): what the user sees before changing it, and the allowed range. — **100 m for `local` segments, range 25 m – 2 km; transit legs reveal their endpoints only** (W3 kickoff, 2026-10-10). D-018 (confirms D-007).
 - [x] **Minimum OS versions** (M1): lowest iOS and Android versions to support. — **Flutter stable template defaults** (owner, 2026-10-08), raised only where a dependency requires it. D-004.
 - [ ] **App ID and bundle ID** (before first store upload): permanent once uploaded. — Temporary `com.example.footnoted` until then (D-006); the stores reject `com.example`, which makes an accidental upload impossible.
 - [x] **Languages** (M1): which UI languages at launch. — **English only at launch, i18n-ready**: every UI string goes through `flutter gen-l10n` from the first screen (owner, 2026-10-08). D-005.

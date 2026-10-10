@@ -25,7 +25,7 @@ stages/                    stage → wave → session plans and notes
 
 ## Getting started
 
-Requirements: **Flutter 3.47.7** (Dart 3.13.5), the Android SDK (platform 36), and for iOS a Mac with Xcode.
+Requirements: **Flutter 3.47.7** (Dart 3.13.5), the Android SDK (platform 36), **JDK 21** for Android builds (D-020), and for iOS a Mac with Xcode.
 
 ```bash
 flutter pub get                     # at the repo root (pub workspace)
