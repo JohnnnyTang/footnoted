@@ -38,7 +38,7 @@ build/cli/bundle/bin/storage_bench.exe --segcells ../out/dataset.segcells.bin --
 build/cli/bundle/bin/storage_bench.exe --probe --out <dir>   # library / cipher / R*Tree / header probe only
 ```
 
-Without `--segcells` it runs the W1 stand-in (`--tiny` for a smoke run, `--dumps` to write it out). `--leg <id>` picks the segment to insert alone and delete. `--stats` prints dataset counts only. For exploratory runs, `--layout A|B`, `--driver raw|drift` and `--cipher on|off` narrow the configurations, `--cache-mb <n>` sets `PRAGMA cache_size` (default: SQLite's 2,000 KiB), and `--rollups 18,16,12,8` changes the rollup levels (finest first). A full real-dataset run needs about 1 GB of free disk for the throwaway databases. Results go to `<out>/result-desktop.json`; `dart run tool/summarize.dart <result.json>...` prints the Markdown tables (median across files).
+Without `--segcells` it runs the W1 stand-in (`--tiny` for a smoke run, `--dumps` to write it out). `--leg <id>` picks the segment to insert alone and delete. `--stats` prints dataset counts only. For exploratory runs, `--layout A|B`, `--driver raw|drift|driftsql` (driftsql: the Drift connection running the raw SQL through `customStatement` batches and `customSelect`; opt-in only) and `--cipher on|off` narrow the configurations, `--cache-mb <n>` sets `PRAGMA cache_size` (default: SQLite's 2,000 KiB), and `--rollups 18,16,12,8` changes the rollup levels (finest first). A full real-dataset run needs about 1 GB of free disk for the throwaway databases. Results go to `<out>/result-desktop.json`; `dart run tool/summarize.dart <result.json>...` prints the Markdown tables (median across files).
 
 ## Android (release)
 

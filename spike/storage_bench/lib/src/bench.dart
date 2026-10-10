@@ -10,7 +10,7 @@ import 'stores.dart';
 class BenchOptions {
   const BenchOptions({
     this.layouts = Layout.values,
-    this.drivers = Driver.values,
+    this.drivers = defaultDrivers,
     this.cipherModes = const [true, false],
     this.levels = const [8, 12, 16, 20],
     this.rollupLevels = const [16, 12, 8],

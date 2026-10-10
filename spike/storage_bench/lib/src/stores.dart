@@ -8,7 +8,13 @@ import 'dataset.dart';
 import 'drift_db.dart';
 import 'schema.dart';
 
-enum Driver { raw, drift }
+/// `drift`: Drift's typed batch API. `driftsql`: the same Drift connection,
+/// but the hot coverage writes and reads go through `customStatement` in a
+/// batch (one prepared statement per SQL text) and `customSelect` with the
+/// raw driver's SQL. Not in the default run; opt in with `--driver driftsql`.
+enum Driver { raw, drift, driftsql }
+
+const defaultDrivers = [Driver.raw, Driver.drift];
 
 /// A z10 tile in z20 cell coordinates (inclusive bounds).
 class TileRange {
@@ -52,9 +58,11 @@ abstract class Store {
     required bool cipher,
     int? cacheKib,
   }) async {
-    final s = d == Driver.raw
-        ? RawStore(layout, path, cipher, cacheKib)
-        : DriftStore(layout, path, cipher, cacheKib);
+    final s = switch (d) {
+      Driver.raw => RawStore(layout, path, cipher, cacheKib),
+      Driver.drift => DriftStore(layout, path, cipher, cacheKib),
+      Driver.driftsql => DriftSqlStore(layout, path, cipher, cacheKib),
+    };
     await s.init();
     return s;
   }
@@ -475,4 +483,101 @@ class DriftStore implements Store {
 
   @override
   Future<int> scalar(String sql) async => _asInt((await _first(sql)).first);
+}
+
+class DriftSqlStore extends DriftStore {
+  DriftSqlStore(super.layout, super.path, super.cipher, [super.cacheKib]);
+
+  Future<void> _batched(String sql, Iterable<List<Object>> rows) async {
+    var part = <List<Object>>[];
+    Future<void> flush() async {
+      final p = part;
+      part = [];
+      await db.batch((b) {
+        for (final a in p) {
+          b.customStatement(sql, a);
+        }
+      });
+    }
+
+    for (final a in rows) {
+      part.add(a);
+      if (part.length >= DriftStore._chunk) await flush();
+    }
+    await flush();
+  }
+
+  @override
+  Future<void> insert(List<Segment> segs) async {
+    await db.transaction(() async {
+      if (layout == Layout.cells) {
+        await _batched(
+          insertCellSql,
+          segs.expand((s) => s.cells.map((c) => [c, s.id])),
+        );
+        return;
+      }
+      await _batched(
+        insertSpanSql,
+        segs.expand((s) => s.spans().map((r) => [s.id, r.y, r.xStart, r.xEnd])),
+      );
+      await _batched(
+        upsertStatSql,
+        _cellCounts(segs).entries.map((e) => [e.key, e.value]),
+      );
+    });
+  }
+
+  @override
+  Future<void> deleteSegment(int id) async {
+    await db.transaction(() async {
+      if (layout == Layout.cells) {
+        await db.customStatement(
+          'DELETE FROM cell_coverage WHERE segment_id = ?',
+          [id],
+        );
+        return;
+      }
+      final rows = await db
+          .customSelect(
+            'SELECT y, x_start, x_end FROM coverage_spans WHERE segment_id = ?',
+            variables: [Variable.withInt(id)],
+          )
+          .get();
+      final cells = _expand(
+        rows.map(
+          (r) =>
+              (r.read<int>('y'), r.read<int>('x_start'), r.read<int>('x_end')),
+        ),
+      );
+      await _batched(decStatSql, cells.map((c) => [c]));
+      await _batched(dropStatSql, cells.map((c) => [c]));
+      await db.customStatement(
+        'DELETE FROM coverage_spans WHERE segment_id = ?',
+        [id],
+      );
+    });
+  }
+
+  @override
+  Future<int> tileCells(TileRange t, int l, {bool viaStats = false}) async {
+    if (layout == Layout.cells || viaStats) {
+      return super.tileCells(t, l, viaStats: viaStats);
+    }
+    final rows = await db
+        .customSelect(
+          spansInTileSql,
+          variables: [
+            for (final a in [t.y0, t.y1, t.x0, t.x1]) Variable.withInt(a),
+          ],
+        )
+        .get();
+    return _rollupSpans(
+      rows.map(
+        (r) => (r.read<int>('y'), r.read<int>('x_start'), r.read<int>('x_end')),
+      ),
+      t,
+      l,
+    );
+  }
 }

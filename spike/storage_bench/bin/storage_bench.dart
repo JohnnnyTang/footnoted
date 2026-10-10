@@ -16,7 +16,7 @@ Usage: dart run bin/storage_bench.dart [options]
   --stats            Only print the dataset counts and exit
   --label <text>     Free-text label stored in the result (machine, build)
   --layout A|B       Only this layout (default: both)
-  --driver raw|drift Only this driver (default: both)
+  --driver <name>    Only this driver: raw, drift or driftsql (default: raw + drift)
   --cipher on|off    Only this cipher mode (default: both)
   --cache-mb <n>     PRAGMA cache_size of n MiB (default: SQLite's 2,000 KiB)
   --rollups <list>   cell_rollups levels, finest first (default: 16,12,8)
@@ -71,7 +71,7 @@ Future<void> main(List<String> args) async {
           if (layout.isEmpty || l.label == layout) l,
       ],
       drivers: [
-        for (final d in Driver.values)
+        for (final d in driver.isEmpty ? defaultDrivers : Driver.values)
           if (driver.isEmpty || d.name == driver) d,
       ],
       cipherModes: [if (cipher != 'off') true, if (cipher != 'on') false],

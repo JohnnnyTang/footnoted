@@ -88,6 +88,22 @@ void main() {
     expect(md, contains('z10 tile `densest/cell_rollups`'));
   });
 
+  test('the opt-in driftsql driver passes every check', () async {
+    final dir = Directory.systemTemp.createTempSync('sb_dsql');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final r = await runBench(
+      buildStandIn(const StandInSpec.tiny()),
+      dir.path,
+      opts: const BenchOptions(
+        drivers: [Driver.driftsql],
+        cipherModes: [false],
+        queryReps: 1,
+      ),
+      log: (_) {},
+    );
+    expect(r['results'], hasLength(2));
+  });
+
   test('rollups cascade and the rollup tile query match by hand', () async {
     final dir = Directory.systemTemp.createTempSync('sb_roll');
     addTearDown(() => dir.deleteSync(recursive: true));
