@@ -1,11 +1,13 @@
 // Host-side runner for one benchmark run on an Android device (MEASURE.md):
 //   dart run bin/measure.dart --serial emulator-5554 --strategy holes \
-//       --texture false --label emulator [--detail 6] [--passes 3] [--no-fog]
+//       --texture false --label emulator [--zoom 10] [--layout B] \
+//       [--source db|memory] [--detail 6] [--passes 3] [--no-fog] [--out DIR]
 //
 // It launches the installed profile build with autorun extras, polls
 // SurfaceFlinger's per-layer present timestamps while the passes run, then
 // cuts them to each pass window the app reports and writes
-// out/runs/<stamp>/summary.json next to the raw captures.
+// <out>/<stamp>_.../summary.json next to the raw captures. The device log is
+// read by the app's pid only; the shared log buffer is never cleared.
 import 'dart:convert';
 import 'dart:io';
 
@@ -53,6 +55,12 @@ String opt(List<String> args, String name, String fallback) {
   return i >= 0 && i + 1 < args.length ? args[i + 1] : fallback;
 }
 
+Never fail(Directory dir, String file, String message, int code) {
+  stderr.writeln(message);
+  File('${dir.path}/$file').writeAsStringSync('$message\n');
+  exit(code);
+}
+
 Future<void> main(List<String> args) async {
   serial = opt(args, 'serial', 'emulator-5554');
   final strategy = opt(args, 'strategy', 'holes');
@@ -60,13 +68,22 @@ Future<void> main(List<String> args) async {
   final label = opt(args, 'label', '');
   final detail = opt(args, 'detail', '6');
   final passes = opt(args, 'passes', '3');
+  final zoom = int.parse(opt(args, 'zoom', '10'));
+  final layout = opt(args, 'layout', 'B').toUpperCase();
+  final source = opt(args, 'source', 'db');
   final fog = !args.contains('--no-fog');
   final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(':', '');
-  final dir = Directory(
-    '${opt(args, 'out', 'out/runs')}/${stamp}_${strategy}_${texture ? 'tex' : 'vd'}${fog ? '' : '_nofog'}',
-  )..createSync(recursive: true);
+  final name = [
+    stamp,
+    'z$zoom',
+    strategy,
+    texture ? 'tex' : 'vd',
+    source == 'db' ? layout : 'mem',
+    if (!fog) 'nofog',
+  ].join('_');
+  final dir = Directory('${opt(args, 'out', 'out/runs')}/$name')
+    ..createSync(recursive: true);
 
-  await adb(['logcat', '-c']);
   await adb([
     'shell',
     'am',
@@ -93,47 +110,76 @@ Future<void> main(List<String> args) async {
     '--ez',
     'fog',
     '$fog',
+    '--ei',
+    'zoom',
+    '$zoom',
+    '--es',
+    'layout',
+    layout,
+    '--es',
+    'source',
+    source,
     '--es',
     'label',
-    label,
+    // `adb shell` joins its arguments into one device shell command line, so
+    // a label with spaces or parentheses must be quoted for that shell.
+    "'${label.replaceAll("'", r"'\''")}'",
   ]);
-  stdout.writeln('started $strategy texture=$texture fog=$fog → ${dir.path}');
+  final pid = (await adb(['shell', 'pidof', pkg])).trim().split(' ').first;
+  if (pid.isEmpty) fail(dir, 'ERROR', 'app did not start', 1);
+  stdout.writeln(
+    'started pid $pid z$zoom $strategy texture=$texture fog=$fog '
+    'source=$source layout=$layout → ${dir.path}',
+  );
 
   final presents = <String, Set<int>>{};
   final refresh = <String, int>{};
-  var gfxReset = false;
+  final logLines = <String>{};
+  var gfxReset = false, dataReady = false;
   String? donePath;
   final passWindows = <int, List<int>>{};
   final appPasses = <int, Map<String, Object?>>{};
-  final deadline = DateTime.now().add(const Duration(minutes: 6));
+  // The first launch on a device builds the coverage DB before any pass.
+  var deadline = DateTime.now().add(const Duration(minutes: 30));
 
   var layers = <String>{};
-  var polls = 0;
+  var polls = 0, ticks = 0;
   while (donePath == null && DateTime.now().isBefore(deadline)) {
     await Future<void>.delayed(const Duration(milliseconds: 500));
-    if (polls++ % 6 == 0) layers = await bufferLayers();
-    for (final layer in layers) {
-      final out = await adb([
-        'shell',
-        'dumpsys',
-        'SurfaceFlinger',
-        '--latency',
-        "'$layer'",
-      ]);
-      final lines = out.trim().split('\n');
-      if (lines.isEmpty) continue;
-      final period = int.tryParse(lines.first.trim());
-      if (period != null) refresh[layer] = period;
-      final set = presents.putIfAbsent(layer, () => <int>{});
-      for (final l in lines.skip(1)) {
-        final parts = l.trim().split(RegExp(r'\s+'));
-        if (parts.length < 3) continue;
-        final actual = int.tryParse(parts[1]) ?? 0;
-        if (actual > 0 && actual < 0x7fffffffffffffff) set.add(actual);
+    if (dataReady) {
+      if (polls++ % 6 == 0) layers = await bufferLayers();
+      for (final layer in layers) {
+        final out = await adb([
+          'shell',
+          'dumpsys',
+          'SurfaceFlinger',
+          '--latency',
+          "'$layer'",
+        ]);
+        final lines = out.trim().split('\n');
+        if (lines.isEmpty) continue;
+        final period = int.tryParse(lines.first.trim());
+        if (period != null) refresh[layer] = period;
+        final set = presents.putIfAbsent(layer, () => <int>{});
+        for (final l in lines.skip(1)) {
+          final parts = l.trim().split(RegExp(r'\s+'));
+          if (parts.length < 3) continue;
+          final actual = int.tryParse(parts[1]) ?? 0;
+          if (actual > 0 && actual < 0x7fffffffffffffff) set.add(actual);
+        }
       }
     }
-    final log = await adb(['logcat', '-d', '-s', 'flutter:I']);
+    final log = await adb(['logcat', '-d', '--pid=$pid', '-s', 'flutter:I']);
     for (final line in log.split('\n')) {
+      if (!logLines.add(line.trimRight())) continue;
+      if (line.contains('RENDER_BENCH_ERROR')) {
+        fail(dir, 'ERROR', line.trim(), 1);
+      }
+      if (!dataReady && line.contains('RENDER_BENCH_DATA')) {
+        dataReady = true;
+        deadline = DateTime.now().add(const Duration(minutes: 6));
+        stdout.writeln('data ready');
+      }
       final start = RegExp(r'RENDER_BENCH_PASS 1 start').firstMatch(line);
       if (start != null && !gfxReset) {
         await adb(['shell', 'dumpsys', 'gfxinfo', pkg, 'reset']);
@@ -155,20 +201,20 @@ Future<void> main(List<String> args) async {
     final top = await adb(['shell', 'dumpsys', 'activity', 'activities']);
     final resumed = RegExp(r'topResumedActivity=\S+ \S+ (\S+)').firstMatch(top);
     if (resumed != null && !resumed.group(1)!.startsWith(pkg)) {
-      stderr.writeln('preempted by ${resumed.group(1)}');
-      File('${dir.path}/PREEMPTED').writeAsStringSync('${resumed.group(1)}\n');
-      exit(3);
+      fail(dir, 'PREEMPTED', 'preempted by ${resumed.group(1)}', 3);
+    }
+    if (++ticks % 20 == 0 && (await adb(['shell', 'pidof', pkg])).isEmpty) {
+      File('${dir.path}/logcat.txt').writeAsStringSync(logLines.join('\n'));
+      fail(dir, 'ERROR', 'app process $pid died', 1);
     }
   }
+  File('${dir.path}/logcat.txt').writeAsStringSync(logLines.join('\n'));
   if (donePath == null) {
-    stderr.writeln('timed out waiting for RENDER_BENCH_DONE');
-    exit(1);
+    fail(dir, 'ERROR', 'timed out waiting for RENDER_BENCH_DONE', 1);
   }
 
   final gfx = await adb(['shell', 'dumpsys', 'gfxinfo', pkg, 'framestats']);
   File('${dir.path}/gfxinfo.txt').writeAsStringSync(gfx);
-  File('${dir.path}/logcat.txt')
-      .writeAsStringSync(await adb(['logcat', '-d', '-s', 'flutter:I']));
   await Process.run(
     'adb',
     ['-s', serial, 'pull', donePath, '${dir.path}/app_result.json'],
@@ -198,6 +244,10 @@ Future<void> main(List<String> args) async {
     'strategy': strategy,
     'texture': texture,
     'fog': fog,
+    'zoom': zoom,
+    'detail': int.parse(detail),
+    'source': source,
+    'layout': layout,
     'refresh_period_ns': refresh,
     'gfxinfo_summary': gfx
         .split('\n')

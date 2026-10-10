@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:render_bench/src/cells.dart';
+import 'package:render_bench/src/coverage_source.dart';
 import 'package:render_bench/src/fog.dart';
 import 'package:render_bench/src/merge.dart';
 import 'package:render_bench/src/pan.dart';
@@ -83,27 +84,38 @@ void main() {
     expect(index.count(0), 1);
   });
 
-  test('fog tile: empty, full and partial', () {
+  test('fog tile: empty, full and partial', () async {
     // One z20 cell inside every level-3 cell of the z1 tile (0, 0).
     final full = <int>[
       for (var x = 0; x < 4; x++)
         for (var y = 0; y < 4; y++) packCell(x << 17, y << 17, 20),
     ]..sort();
     final index = CoverageIndex.fromZ20(Int64List.fromList(full));
-    final fog = FogBuilder(index, detail: 2);
+    final fog = FogBuilder(MemorySource(index), detail: 2);
     final stats = FogStats();
 
-    final covered = fog.build(FogStrategy.holes, [(z: 1, x: 0, y: 0)], stats);
+    final covered = await fog.build(FogStrategy.holes, [
+      (z: 1, x: 0, y: 0),
+    ], stats);
     expect(covered['features'], isEmpty);
-    final inverse = fog.build(FogStrategy.inverse, [(z: 1, x: 0, y: 0)], stats);
+    final inverse = await fog.build(FogStrategy.inverse, [
+      (z: 1, x: 0, y: 0),
+    ], stats);
     expect(inverse['features'], isEmpty);
 
     // At z1 the tile (1, 1) holds no cells: one outer ring, no holes.
-    final empty = fog.build(FogStrategy.holes, [(z: 1, x: 1, y: 1)], stats);
+    final empty = await fog.build(FogStrategy.holes, [
+      (z: 1, x: 1, y: 1),
+    ], stats);
     final geometry =
         ((empty['features'] as List).single as Map)['geometry'] as Map;
     expect((geometry['coordinates'] as List).length, 1);
     expect(stats.rects, 0);
+    expect(stats.queried, 1);
+
+    // A second build of the same tile is served from the cache.
+    await fog.build(FogStrategy.holes, [(z: 1, x: 1, y: 1)], stats);
+    expect((stats.queried, stats.cacheHits), (0, 1));
   });
 
   test('visible tiles at z10 cover the viewport plus padding', () {

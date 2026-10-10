@@ -1,0 +1,138 @@
+{
+  "serial": "emulator-5554",
+  "label": "unknown Android SDK built for x86_64, Android 16 (emulator)",
+  "strategy": "holes",
+  "texture": true,
+  "fog": true,
+  "zoom": 10,
+  "detail": 6,
+  "source": "db",
+  "layout": "B",
+  "refresh_period_ns": {
+    "55f3a28 SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#492": 16666666,
+    "41872ed com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity#482": 16666666,
+    "55f3a28 SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity]#491": 16666666,
+    "com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity#487": 16666666
+  },
+  "gfxinfo_summary": [
+    "Total frames rendered: 1322",
+    "Janky frames: 633 (47.88%)",
+    "Janky frames (legacy): 193 (14.60%)",
+    "Total frames rendered: 661",
+    "Janky frames: 633 (95.76%)",
+    "Janky frames (legacy): 193 (29.20%)"
+  ],
+  "passes": {
+    "1": {
+      "surfaceflinger": {
+        "55f3a28 SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#492": {
+          "frames": 875,
+          "span_s": 19.97,
+          "mean_fps": 43.82,
+          "median_fps": 53.24,
+          "p50_ms": 18.78,
+          "p90_ms": 35.85,
+          "p99_ms": 56.25,
+          "max_ms": 76.0,
+          "pct_over_32ms": 20.91
+        },
+        "com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity#487": {
+          "frames": 188,
+          "span_s": 19.82,
+          "mean_fps": 9.49,
+          "median_fps": 10.18,
+          "p50_ms": 98.27,
+          "p90_ms": 178.76,
+          "p99_ms": 270.18,
+          "max_ms": 305.2,
+          "pct_over_32ms": 94.68
+        }
+      },
+      "flutter_frames": {
+        "frames": 876,
+        "span_s": 19.99,
+        "mean_fps": 43.81,
+        "median_fps": 47.15,
+        "p50_ms": 21.21,
+        "p90_ms": 34.65,
+        "p99_ms": 52.63,
+        "max_ms": 67.23,
+        "pct_over_32ms": 12.79
+      }
+    },
+    "2": {
+      "surfaceflinger": {
+        "55f3a28 SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#492": {
+          "frames": 910,
+          "span_s": 20.01,
+          "mean_fps": 45.48,
+          "median_fps": 54.68,
+          "p50_ms": 18.29,
+          "p90_ms": 35.28,
+          "p99_ms": 53.6,
+          "max_ms": 82.45,
+          "pct_over_32ms": 19.56
+        },
+        "com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity#487": {
+          "frames": 202,
+          "span_s": 19.89,
+          "mean_fps": 10.16,
+          "median_fps": 11.72,
+          "p50_ms": 85.35,
+          "p90_ms": 167.68,
+          "p99_ms": 268.57,
+          "max_ms": 350.59,
+          "pct_over_32ms": 95.54
+        }
+      },
+      "flutter_frames": {
+        "frames": 911,
+        "span_s": 20.06,
+        "mean_fps": 45.42,
+        "median_fps": 50.47,
+        "p50_ms": 19.81,
+        "p90_ms": 33.25,
+        "p99_ms": 50.31,
+        "max_ms": 72.88,
+        "pct_over_32ms": 11.86
+      }
+    },
+    "3": {
+      "surfaceflinger": {
+        "55f3a28 SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#492": {
+          "frames": 879,
+          "span_s": 20.02,
+          "mean_fps": 43.9,
+          "median_fps": 54.1,
+          "p50_ms": 18.48,
+          "p90_ms": 36.07,
+          "p99_ms": 55.14,
+          "max_ms": 72.75,
+          "pct_over_32ms": 22.07
+        },
+        "com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity#487": {
+          "frames": 192,
+          "span_s": 19.82,
+          "mean_fps": 9.69,
+          "median_fps": 10.17,
+          "p50_ms": 98.3,
+          "p90_ms": 170.08,
+          "p99_ms": 265.98,
+          "max_ms": 286.31,
+          "pct_over_32ms": 96.88
+        }
+      },
+      "flutter_frames": {
+        "frames": 880,
+        "span_s": 20.03,
+        "mean_fps": 43.94,
+        "median_fps": 46.77,
+        "p50_ms": 21.38,
+        "p90_ms": 33.3,
+        "p99_ms": 52.19,
+        "max_ms": 72.56,
+        "pct_over_32ms": 13.18
+      }
+    }
+  }
+}

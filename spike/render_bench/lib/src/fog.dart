@@ -1,6 +1,8 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'cells.dart';
+import 'coverage_source.dart';
 import 'merge.dart';
 
 enum FogStrategy {
@@ -47,18 +49,31 @@ List<TileKey> visibleTiles({
 class FogStats {
   int tiles = 0;
   int cacheHits = 0;
+  int queried = 0;
   int rects = 0;
   int positions = 0;
   int level = 0;
+
+  /// Geometry (merge + rings) on the calling isolate.
   double buildMs = 0;
+
+  /// Time spent inside the coverage source's tile queries.
+  double queryMs = 0;
+
+  /// Wall time from asking the source to having every tile's cells, which
+  /// adds the isolate hop to [queryMs].
+  double waitMs = 0;
 
   Map<String, Object> toJson() => {
     'tiles': tiles,
     'cache_hits': cacheHits,
+    'queried': queried,
     'rects': rects,
     'positions': positions,
     'level': level,
     'build_ms': buildMs,
+    'query_ms': queryMs,
+    'wait_ms': waitMs,
   };
 }
 
@@ -69,11 +84,12 @@ class _TileFog {
 }
 
 /// Builds the fog FeatureCollection for a set of tiles, caching each tile's
-/// feature by (strategy, tile, level). The spike's stand-in for S01-41.
+/// feature by (strategy, tile, level). Tiles not in the cache are fetched from
+/// the [source] in one batch. The spike's stand-in for S01-41.
 class FogBuilder {
-  FogBuilder(this.index, {this.detail = 6});
+  FogBuilder(this.source, {this.detail = 6});
 
-  final CoverageIndex index;
+  final CoverageSource source;
 
   /// Cell level = tile zoom + [detail]; at detail 6 a cell is 8 logical px.
   int detail;
@@ -84,29 +100,53 @@ class FogBuilder {
 
   void clearCache() => _cache.clear();
 
-  Map<String, Object> build(
+  Future<Map<String, Object>> build(
     FogStrategy strategy,
     List<TileKey> tiles,
     FogStats stats,
-  ) {
-    final sw = Stopwatch()..start();
-    final features = <Map<String, Object>>[];
+  ) async {
     stats
       ..tiles = tiles.length
       ..cacheHits = 0
+      ..queried = 0
       ..rects = 0
       ..positions = 0;
+    final missing = <TileKey>[];
     for (final t in tiles) {
       final level = levelFor(t.z);
       stats.level = level;
-      final key = (strategy, t.z, t.x, t.y, level);
-      var fog = _cache[key];
-      if (fog != null) {
+      if (_cache.containsKey((strategy, t.z, t.x, t.y, level))) {
         stats.cacheHits++;
       } else {
-        fog = _tile(strategy, t, level);
-        _cache[key] = fog;
+        missing.add(t);
       }
+    }
+    final wait = Stopwatch()..start();
+    final fetched = missing.isEmpty
+        ? null
+        : await source.columns([
+            for (final t in missing)
+              (z: t.z, x: t.x, y: t.y, level: levelFor(t.z)),
+          ]);
+    stats
+      ..waitMs = wait.elapsedMicroseconds / 1000
+      ..queryMs = fetched?.queryMs ?? 0
+      ..queried = missing.length;
+
+    final sw = Stopwatch()..start();
+    for (var i = 0; i < missing.length; i++) {
+      final t = missing[i];
+      final level = levelFor(t.z);
+      _cache[(strategy, t.z, t.x, t.y, level)] = _tile(
+        strategy,
+        t,
+        level,
+        fetched!.columns[i],
+      );
+    }
+    final features = <Map<String, Object>>[];
+    for (final t in tiles) {
+      final fog = _cache[(strategy, t.z, t.x, t.y, levelFor(t.z))]!;
       stats
         ..rects += fog.rects
         ..positions += fog.positions;
@@ -116,10 +156,14 @@ class FogBuilder {
     return {'type': 'FeatureCollection', 'features': features};
   }
 
-  _TileFog _tile(FogStrategy strategy, TileKey t, int level) {
+  _TileFog _tile(
+    FogStrategy strategy,
+    TileKey t,
+    int level,
+    List<Int32List> cols,
+  ) {
     final d = level - t.z;
     final side = 1 << d;
-    final cols = index.tileColumns(t.z, t.x, t.y, level);
     final x0 = t.x << d, y0 = t.y << d;
     final lons = List<double>.generate(
       side + 1,
