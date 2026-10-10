@@ -8,7 +8,13 @@ import 'dataset.dart';
 import 'drift_db.dart';
 import 'schema.dart';
 
-enum Driver { raw, drift }
+/// `drift`: Drift's typed batch API. `driftsql`: the same Drift connection,
+/// but the hot coverage writes and reads go through `customStatement` in a
+/// batch (one prepared statement per SQL text) and `customSelect` with the
+/// raw driver's SQL. Not in the default run; opt in with `--driver driftsql`.
+enum Driver { raw, drift, driftsql }
+
+const defaultDrivers = [Driver.raw, Driver.drift];
 
 /// A z10 tile in z20 cell coordinates (inclusive bounds).
 class TileRange {
@@ -26,7 +32,9 @@ class TileRange {
 const _testKeyHex =
     '2b7e151628aed2a6abf7158809cf4f3c762e7151f4a7c5c6b1a0dbe3b1e6c1f0';
 
-void applyPragmas(s3.Database db, {required bool cipher}) {
+/// [cacheKib] sets `PRAGMA cache_size = -cacheKib`; null keeps SQLite's
+/// default (2,000 KiB).
+void applyPragmas(s3.Database db, {required bool cipher, int? cacheKib}) {
   if (cipher) {
     db.execute("PRAGMA key = \"x'$_testKeyHex'\"");
     final v = db.select('PRAGMA cipher_version');
@@ -39,6 +47,7 @@ void applyPragmas(s3.Database db, {required bool cipher}) {
     throw StateError('journal_mode is $jm, expected wal');
   }
   db.execute('PRAGMA synchronous = NORMAL');
+  if (cacheKib != null) db.execute('PRAGMA cache_size = -$cacheKib');
 }
 
 abstract class Store {
@@ -47,10 +56,13 @@ abstract class Store {
     Layout layout,
     String path, {
     required bool cipher,
+    int? cacheKib,
   }) async {
-    final s = d == Driver.raw
-        ? RawStore(layout, path, cipher)
-        : DriftStore(layout, path, cipher);
+    final s = switch (d) {
+      Driver.raw => RawStore(layout, path, cipher, cacheKib),
+      Driver.drift => DriftStore(layout, path, cipher, cacheKib),
+      Driver.driftsql => DriftSqlStore(layout, path, cipher, cacheKib),
+    };
     await s.init();
     return s;
   }
@@ -67,6 +79,32 @@ abstract class Store {
   Future<int> statsCount();
   Future<void> vacuum();
   Future<void> close();
+
+  /// `PRAGMA cipher_version` on this store's own connection ('' if none).
+  Future<String> cipherVersion();
+
+  /// Runs one statement (the rollup builds). Drift runs it through
+  /// `customStatement`, as a Drift-based app would for set-based SQL.
+  Future<void> exec(String sql);
+
+  /// Number of level-[l] `cell_rollups` rows in [t].
+  Future<int> rollupTileCells(TileRange t, int l);
+
+  /// The first column of the first row of [sql], as an int.
+  Future<int> scalar(String sql);
+}
+
+List<int> _rollupTileArgs(TileRange t, int l) {
+  final sh = 20 - l;
+  final mask = (1 << l) - 1;
+  return [
+    l,
+    (t.x0 >> sh) << l,
+    ((t.x1 >> sh) << l) | mask,
+    mask,
+    t.y0 >> sh,
+    t.y1 >> sh,
+  ];
 }
 
 Map<int, int> _cellCounts(List<Segment> segs) {
@@ -106,16 +144,17 @@ List<int> _rollupArgs(TileRange t, int l) => [
 ];
 
 class RawStore implements Store {
-  RawStore(this.layout, this.path, this.cipher);
+  RawStore(this.layout, this.path, this.cipher, [this.cacheKib]);
   final Layout layout;
   final String path;
   final bool cipher;
+  final int? cacheKib;
   late final s3.Database db;
 
   @override
   Future<void> init() async {
     db = s3.sqlite3.open(path);
-    applyPragmas(db, cipher: cipher);
+    applyPragmas(db, cipher: cipher, cacheKib: cacheKib);
     if (db.select('SELECT 1 FROM sqlite_master LIMIT 1').isEmpty) {
       for (final s in ddlFor(layout)) {
         db.execute(s);
@@ -220,13 +259,34 @@ class RawStore implements Store {
 
   @override
   Future<void> close() async => db.close();
+
+  @override
+  Future<String> cipherVersion() async {
+    final v = db.select('PRAGMA cipher_version');
+    return v.isEmpty ? '' : '${v.first.values.first}';
+  }
+
+  @override
+  Future<void> exec(String sql) async => db.execute(sql);
+
+  @override
+  Future<int> rollupTileCells(TileRange t, int l) async =>
+      db.select(rollupTileSql, _rollupTileArgs(t, l)).length;
+
+  @override
+  Future<int> scalar(String sql) async =>
+      _asInt(db.select(sql).first.values.first);
 }
 
+// Some pragmas (page_count under SQLCipher) come back as text.
+int _asInt(Object? v) => v is int ? v : int.parse('$v');
+
 class DriftStore implements Store {
-  DriftStore(this.layout, this.path, this.cipher);
+  DriftStore(this.layout, this.path, this.cipher, [this.cacheKib]);
   final Layout layout;
   final String path;
   final bool cipher;
+  final int? cacheKib;
   late final BenchDb db;
 
   static const _chunk = 20000;
@@ -236,7 +296,7 @@ class DriftStore implements Store {
     db = BenchDb(
       NativeDatabase(
         File(path),
-        setup: (raw) => applyPragmas(raw, cipher: cipher),
+        setup: (raw) => applyPragmas(raw, cipher: cipher, cacheKib: cacheKib),
       ),
       ddlFor(layout),
     );
@@ -394,4 +454,130 @@ class DriftStore implements Store {
 
   @override
   Future<void> close() => db.close();
+
+  Future<List<Object?>> _first(String sql) async => [
+    for (final r in await db.customSelect(sql).get()) r.data.values.first,
+  ];
+
+  @override
+  Future<String> cipherVersion() async {
+    final v = await _first('PRAGMA cipher_version');
+    return v.isEmpty ? '' : '${v.first}';
+  }
+
+  @override
+  Future<void> exec(String sql) => db.customStatement(sql);
+
+  @override
+  Future<int> rollupTileCells(TileRange t, int l) async {
+    final rows = await db
+        .customSelect(
+          rollupTileSql,
+          variables: [
+            for (final a in _rollupTileArgs(t, l)) Variable.withInt(a),
+          ],
+        )
+        .get();
+    return rows.length;
+  }
+
+  @override
+  Future<int> scalar(String sql) async => _asInt((await _first(sql)).first);
+}
+
+class DriftSqlStore extends DriftStore {
+  DriftSqlStore(super.layout, super.path, super.cipher, [super.cacheKib]);
+
+  Future<void> _batched(String sql, Iterable<List<Object>> rows) async {
+    var part = <List<Object>>[];
+    Future<void> flush() async {
+      final p = part;
+      part = [];
+      await db.batch((b) {
+        for (final a in p) {
+          b.customStatement(sql, a);
+        }
+      });
+    }
+
+    for (final a in rows) {
+      part.add(a);
+      if (part.length >= DriftStore._chunk) await flush();
+    }
+    await flush();
+  }
+
+  @override
+  Future<void> insert(List<Segment> segs) async {
+    await db.transaction(() async {
+      if (layout == Layout.cells) {
+        await _batched(
+          insertCellSql,
+          segs.expand((s) => s.cells.map((c) => [c, s.id])),
+        );
+        return;
+      }
+      await _batched(
+        insertSpanSql,
+        segs.expand((s) => s.spans().map((r) => [s.id, r.y, r.xStart, r.xEnd])),
+      );
+      await _batched(
+        upsertStatSql,
+        _cellCounts(segs).entries.map((e) => [e.key, e.value]),
+      );
+    });
+  }
+
+  @override
+  Future<void> deleteSegment(int id) async {
+    await db.transaction(() async {
+      if (layout == Layout.cells) {
+        await db.customStatement(
+          'DELETE FROM cell_coverage WHERE segment_id = ?',
+          [id],
+        );
+        return;
+      }
+      final rows = await db
+          .customSelect(
+            'SELECT y, x_start, x_end FROM coverage_spans WHERE segment_id = ?',
+            variables: [Variable.withInt(id)],
+          )
+          .get();
+      final cells = _expand(
+        rows.map(
+          (r) =>
+              (r.read<int>('y'), r.read<int>('x_start'), r.read<int>('x_end')),
+        ),
+      );
+      await _batched(decStatSql, cells.map((c) => [c]));
+      await _batched(dropStatSql, cells.map((c) => [c]));
+      await db.customStatement(
+        'DELETE FROM coverage_spans WHERE segment_id = ?',
+        [id],
+      );
+    });
+  }
+
+  @override
+  Future<int> tileCells(TileRange t, int l, {bool viaStats = false}) async {
+    if (layout == Layout.cells || viaStats) {
+      return super.tileCells(t, l, viaStats: viaStats);
+    }
+    final rows = await db
+        .customSelect(
+          spansInTileSql,
+          variables: [
+            for (final a in [t.y0, t.y1, t.x0, t.x1]) Variable.withInt(a),
+          ],
+        )
+        .get();
+    return _rollupSpans(
+      rows.map(
+        (r) => (r.read<int>('y'), r.read<int>('x_start'), r.read<int>('x_end')),
+      ),
+      t,
+      l,
+    );
+  }
 }

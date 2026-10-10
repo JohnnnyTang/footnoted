@@ -1,0 +1,1019 @@
+{
+  "env": {
+    "runner": "flutter-app",
+    "build": "release",
+    "os": "android",
+    "os_version": "sdk_phone64_x86_64-userdebug 16 BE2A.250530.026.D1 13818094 test-keys",
+    "dart": "3.13.5 (stable) (Tue Sep 29 01:00:52 2026 -0700) on \"android_x64\"",
+    "cpus": 4,
+    "utc": "2026-10-09T15:34:47.281679Z"
+  },
+  "sqlite": {
+    "sqlite_version": "3.53.4",
+    "cipher_version": "4.19.0 community",
+    "rtree_compile_option": true,
+    "cipher_available": true,
+    "cipher_provider": "openssl",
+    "cipher_provider_version": "OpenSSL 4.0.3 29 Sep 2026",
+    "rtree_query_ids": [
+      1
+    ],
+    "journal_mode": "wal",
+    "synchronous": 1,
+    "file_header_is_plain_sqlite": false,
+    "file_header_hex": "3ae004fea952d63341d9e465861debbe"
+  },
+  "pragmas": {
+    "journal_mode": "wal",
+    "synchronous": "NORMAL",
+    "cache_size_kib": "default"
+  },
+  "dataset": {
+    "source": "dataset.segcells.bin",
+    "segments": 2982,
+    "rows_cell_segment": 9714696,
+    "unique_cells": 1169242,
+    "spans": 458360,
+    "long_leg": {
+      "id": 564,
+      "label": "",
+      "rows": 899508,
+      "spans": 25599
+    },
+    "tiles_z10": {
+      "densest": [
+        229,
+        455
+      ],
+      "long_leg": [
+        225,
+        442
+      ]
+    },
+    "expected_tile_cells": {
+      "densest": {
+        "8": 1,
+        "12": 7,
+        "16": 606,
+        "20": 112296
+      },
+      "long_leg": {
+        "8": 1,
+        "12": 4,
+        "16": 200,
+        "20": 32747
+      }
+    },
+    "expected_rollup_rows": {
+      "16": 7610,
+      "12": 199,
+      "8": 18
+    }
+  },
+  "results": [
+    {
+      "layout": "A",
+      "driver": "raw",
+      "cipher": true,
+      "leg_insert_ms": 1004,
+      "full_insert_ms": 67003,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 3185,
+      "size_bytes": 278294528,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 740,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 8,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 748,
+        "bytes": 131072
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 378.302,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 413.768,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 544.524,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 516.47,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.148,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.015,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.011,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 119.999,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 117.862,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 120.055,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 118.835,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.102,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.008,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.008,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 792,
+      "file_header_is_plain_sqlite": false
+    },
+    {
+      "layout": "A",
+      "driver": "drift",
+      "cipher": true,
+      "leg_insert_ms": 2670,
+      "full_insert_ms": 95459,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 3258,
+      "size_bytes": 278294528,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 840,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 12,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 852,
+        "bytes": 131072
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 397.202,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 415.449,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 554.894,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 551.145,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.564,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.047,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.009,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 119.397,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 119.702,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 130.663,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 160.478,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.191,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.006,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.003,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 991,
+      "file_header_is_plain_sqlite": false
+    },
+    {
+      "layout": "B",
+      "driver": "raw",
+      "cipher": true,
+      "leg_insert_ms": 817,
+      "full_insert_ms": 3341,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 415,
+      "size_bytes": 31416320,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 352,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 2,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 354,
+        "bytes": 131072
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 1186.464,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 1167.741,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 1179.599,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 1447.192,
+            "cells": 112296
+          }
+        },
+        "densest/cell_stats": {
+          "8": {
+            "median_ms": 6.652,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 7.667,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 10.8,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 45.466,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.166,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.021,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.011,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 3.709,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 5.386,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 3.891,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 16.445,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_stats": {
+          "8": {
+            "median_ms": 15.565,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 15.719,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 18.603,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 26.681,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.113,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.008,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.005,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 1251,
+      "file_header_is_plain_sqlite": false
+    },
+    {
+      "layout": "B",
+      "driver": "drift",
+      "cipher": true,
+      "leg_insert_ms": 4282,
+      "full_insert_ms": 8822,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 298,
+      "size_bytes": 31416320,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 342,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 1,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 343,
+        "bytes": 131072
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 1781.576,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 1514.801,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 1550.605,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 1902.604,
+            "cells": 112296
+          }
+        },
+        "densest/cell_stats": {
+          "8": {
+            "median_ms": 7.348,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 7.28,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 12.554,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 123.267,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.253,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.006,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.004,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 7.412,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 8.687,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 8.632,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 20.146,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_stats": {
+          "8": {
+            "median_ms": 23.47,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 18.355,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 19.587,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 36.05,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.129,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.007,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.004,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 4483,
+      "file_header_is_plain_sqlite": false
+    },
+    {
+      "layout": "A",
+      "driver": "raw",
+      "cipher": false,
+      "leg_insert_ms": 936,
+      "full_insert_ms": 23847,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 1759,
+      "size_bytes": 272580608,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 533,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 9,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 542,
+        "bytes": 126976
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 316.259,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 384.507,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 509.163,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 367.523,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.143,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.079,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.027,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 73.365,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 72.27,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 77.894,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 85.393,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.114,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.009,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.007,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 511,
+      "file_header_is_plain_sqlite": true
+    },
+    {
+      "layout": "A",
+      "driver": "drift",
+      "cipher": false,
+      "leg_insert_ms": 2702,
+      "full_insert_ms": 44254,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 1697,
+      "size_bytes": 272580608,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 599,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 8,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 607,
+        "bytes": 126976
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 327.38,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 369.415,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 532.397,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 457.369,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.268,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.009,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.006,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 78.949,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 78.798,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 85.422,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 101.536,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.173,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.008,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.005,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 535,
+      "file_header_is_plain_sqlite": true
+    },
+    {
+      "layout": "B",
+      "driver": "raw",
+      "cipher": false,
+      "leg_insert_ms": 794,
+      "full_insert_ms": 3193,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 263,
+      "size_bytes": 30781440,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 464,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 2,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 466,
+        "bytes": 126976
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 495.89,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 431.581,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 445.396,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 683.494,
+            "cells": 112296
+          }
+        },
+        "densest/cell_stats": {
+          "8": {
+            "median_ms": 8.05,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 8.754,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 12.873,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 58.817,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.132,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.009,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.006,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 4.075,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 4.133,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 4.554,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 14.969,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_stats": {
+          "8": {
+            "median_ms": 12.716,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 12.295,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 15.965,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 22.847,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.093,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.007,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.005,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 1305,
+      "file_header_is_plain_sqlite": true
+    },
+    {
+      "layout": "B",
+      "driver": "drift",
+      "cipher": false,
+      "leg_insert_ms": 4402,
+      "full_insert_ms": 8412,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 223,
+      "size_bytes": 30781440,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "16": {
+            "build_ms": 377,
+            "rows": 7610,
+            "from": 20
+          },
+          "12": {
+            "build_ms": 3,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 380,
+        "bytes": 126976
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 902.494,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 775.445,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 808.844,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 1184.173,
+            "cells": 112296
+          }
+        },
+        "densest/cell_stats": {
+          "8": {
+            "median_ms": 7.041,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 8.403,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 12.68,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 129.479,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "16": {
+            "median_ms": 0.238,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.006,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.004,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 7.765,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 7.897,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 8.228,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 21.285,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_stats": {
+          "8": {
+            "median_ms": 11.863,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 12.82,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 14.815,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 32.437,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "16": {
+            "median_ms": 0.127,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.021,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.013,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 4375,
+      "file_header_is_plain_sqlite": true
+    }
+  ]
+}

@@ -57,3 +57,38 @@ const upsertStatSql =
     'ON CONFLICT (cell_id) DO UPDATE SET n = n + excluded.n';
 const decStatSql = 'UPDATE cell_stats SET n = n - 1 WHERE cell_id = ?';
 const dropStatSql = 'DELETE FROM cell_stats WHERE cell_id = ? AND n <= 0';
+
+// F01.3 rollups, a rebuildable cache. `n` counts the covered z20 cells under
+// the level-`level` cell, which is packed `(x << level) | y`.
+const ddlRollups =
+    'CREATE TABLE cell_rollups (level INTEGER NOT NULL, '
+    'cell_id INTEGER NOT NULL, n INTEGER NOT NULL, '
+    'PRIMARY KEY (level, cell_id)) WITHOUT ROWID';
+
+/// Level [l] from the z20 covered cells: A's distinct `cell_coverage` cells,
+/// or B's `cell_stats`.
+String rollupFromLeavesSql(Layout layout, int l) {
+  final sh = 20 - l;
+  final src = layout == Layout.cells
+      ? '(SELECT DISTINCT cell_id FROM cell_coverage)'
+      : 'cell_stats';
+  return 'INSERT INTO cell_rollups (level, cell_id, n) '
+      'SELECT $l, (((cell_id >> 20) >> $sh) << $l) | '
+      '((cell_id & $_mask20) >> $sh) AS p, count(*) FROM $src GROUP BY p';
+}
+
+/// Level [l] from the finer level [from], which must already be built.
+String rollupFromLevelSql(int from, int l) {
+  final sh = from - l;
+  final mask = (1 << from) - 1;
+  return 'INSERT INTO cell_rollups (level, cell_id, n) '
+      'SELECT $l, (((cell_id >> $from) >> $sh) << $l) | '
+      '((cell_id & $mask) >> $sh) AS p, sum(n) FROM cell_rollups '
+      'WHERE level = $from GROUP BY p';
+}
+
+/// Level-`?1` cells with x in a packed-ID range `?2..?3` and y
+/// (`cell_id & ?4`) in `?5..?6`.
+const rollupTileSql =
+    'SELECT cell_id, n FROM cell_rollups WHERE level = ?1 '
+    'AND cell_id BETWEEN ?2 AND ?3 AND (cell_id & ?4) BETWEEN ?5 AND ?6';

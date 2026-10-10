@@ -1,0 +1,228 @@
+{
+  "env": {
+    "runner": "desktop-cli",
+    "label": "win11 desktop AOT, B/raw/on, cache_size 64 MiB, rollups 18-8",
+    "build": "aot",
+    "os": "windows",
+    "os_version": "\"Windows 11 家庭版 中文版\" 10.0 (Build 26300)",
+    "dart": "3.13.5 (stable) (Tue Sep 29 01:00:52 2026 -0700) on \"windows_x64\"",
+    "cpus": 8,
+    "utc": "2026-10-09T14:54:44.954890Z"
+  },
+  "sqlite": {
+    "sqlite_version": "3.53.4",
+    "cipher_version": "4.19.0 community",
+    "rtree_compile_option": true,
+    "cipher_available": true,
+    "cipher_provider": "openssl",
+    "cipher_provider_version": "OpenSSL 4.0.3 29 Sep 2026",
+    "rtree_query_ids": [
+      1
+    ],
+    "journal_mode": "wal",
+    "synchronous": 1,
+    "file_header_is_plain_sqlite": false,
+    "file_header_hex": "f03e88da778201219e4dbe0d2202f017"
+  },
+  "pragmas": {
+    "journal_mode": "wal",
+    "synchronous": "NORMAL",
+    "cache_size_kib": 65536
+  },
+  "dataset": {
+    "source": "dataset.segcells.bin",
+    "segments": 2982,
+    "rows_cell_segment": 9714696,
+    "unique_cells": 1169242,
+    "spans": 458360,
+    "long_leg": {
+      "id": 564,
+      "label": "",
+      "rows": 899508,
+      "spans": 25599
+    },
+    "tiles_z10": {
+      "densest": [
+        229,
+        455
+      ],
+      "long_leg": [
+        225,
+        442
+      ]
+    },
+    "expected_tile_cells": {
+      "densest": {
+        "8": 1,
+        "12": 7,
+        "16": 606,
+        "20": 112296,
+        "18": 7792
+      },
+      "long_leg": {
+        "8": 1,
+        "12": 4,
+        "16": 200,
+        "20": 32747,
+        "18": 2274
+      }
+    },
+    "expected_rollup_rows": {
+      "18": 83617,
+      "16": 7610,
+      "12": 199,
+      "8": 18
+    }
+  },
+  "results": [
+    {
+      "layout": "B",
+      "driver": "raw",
+      "cipher": true,
+      "leg_insert_ms": 698,
+      "full_insert_ms": 2174,
+      "cipher_version": "4.19.0 community",
+      "vacuum_ms": 314,
+      "size_bytes": 31416320,
+      "wal_bytes_after_checkpoint": 0,
+      "rollups": {
+        "levels": {
+          "18": {
+            "build_ms": 302,
+            "rows": 83617,
+            "from": 20
+          },
+          "16": {
+            "build_ms": 23,
+            "rows": 7610,
+            "from": 18
+          },
+          "12": {
+            "build_ms": 2,
+            "rows": 199,
+            "from": 16
+          },
+          "8": {
+            "build_ms": 0,
+            "rows": 18,
+            "from": 12
+          }
+        },
+        "build_ms_total": 327,
+        "bytes": 1597440
+      },
+      "tile_query": {
+        "densest": {
+          "8": {
+            "median_ms": 262.276,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 249.369,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 277.238,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 313.499,
+            "cells": 112296
+          }
+        },
+        "densest/cell_stats": {
+          "8": {
+            "median_ms": 8.352,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 8.523,
+            "cells": 7
+          },
+          "16": {
+            "median_ms": 13.447,
+            "cells": 606
+          },
+          "20": {
+            "median_ms": 42.479,
+            "cells": 112296
+          }
+        },
+        "densest/cell_rollups": {
+          "18": {
+            "median_ms": 1.654,
+            "cells": 7792
+          },
+          "16": {
+            "median_ms": 0.124,
+            "cells": 606
+          },
+          "12": {
+            "median_ms": 0.007,
+            "cells": 7
+          },
+          "8": {
+            "median_ms": 0.006,
+            "cells": 1
+          }
+        },
+        "long_leg": {
+          "8": {
+            "median_ms": 4.358,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 4.175,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 4.054,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 9.019,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_stats": {
+          "8": {
+            "median_ms": 14.144,
+            "cells": 1
+          },
+          "12": {
+            "median_ms": 13.501,
+            "cells": 4
+          },
+          "16": {
+            "median_ms": 14.579,
+            "cells": 200
+          },
+          "20": {
+            "median_ms": 21.315,
+            "cells": 32747
+          }
+        },
+        "long_leg/cell_rollups": {
+          "18": {
+            "median_ms": 1.239,
+            "cells": 2274
+          },
+          "16": {
+            "median_ms": 0.123,
+            "cells": 200
+          },
+          "12": {
+            "median_ms": 0.011,
+            "cells": 4
+          },
+          "8": {
+            "median_ms": 0.008,
+            "cells": 1
+          }
+        }
+      },
+      "delete_leg_ms": 1192,
+      "file_header_is_plain_sqlite": false
+    }
+  ]
+}

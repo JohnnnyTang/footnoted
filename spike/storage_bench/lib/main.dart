@@ -62,9 +62,10 @@ class _SpikeAppState extends State<SpikeApp> {
 
   Future<void> _run() async {
     setState(() => _running = true);
+    String? ext;
     try {
       final docs = (await getApplicationDocumentsDirectory()).path;
-      final ext = Platform.isAndroid
+      ext = Platform.isAndroid
           ? (await getExternalStorageDirectory())?.path
           : null;
       final input = ext == null ? null : p.join(ext, 'dataset.segcells.bin');
@@ -74,8 +75,12 @@ class _SpikeAppState extends State<SpikeApp> {
       );
       _log('work dir $work');
       final json = await compute(_benchJob, (input, work));
+      // Write then rename, so that a poller (spike/device_run/storage.dart)
+      // never pulls a half-written file.
       for (final dir in [docs, ?ext]) {
-        File(p.join(dir, 'storage_bench_result.json')).writeAsStringSync(json);
+        final tmp = File(p.join(dir, 'storage_bench_result.json.tmp'))
+          ..writeAsStringSync(json);
+        tmp.renameSync(p.join(dir, 'storage_bench_result.json'));
       }
       debugPrint('BENCH_RESULT_BEGIN');
       for (final line in const LineSplitter().convert(json)) {
@@ -86,6 +91,10 @@ class _SpikeAppState extends State<SpikeApp> {
     } catch (e, st) {
       _log('FAILED: $e');
       debugPrint('$st');
+      if (ext != null) {
+        File(p.join(ext, 'storage_bench_error.txt'))
+            .writeAsStringSync('$e\n$st');
+      }
     } finally {
       if (mounted) setState(() => _running = false);
     }
