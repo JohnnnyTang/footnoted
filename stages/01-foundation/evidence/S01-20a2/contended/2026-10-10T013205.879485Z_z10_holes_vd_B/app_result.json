@@ -1,0 +1,267 @@
+{
+  "args": {
+    "zoom": 10.0,
+    "source": "db",
+    "layout": "B",
+    "segcells": "dataset.segcells.bin",
+    "strategy": "holes",
+    "texture": false,
+    "platform_view": "GLSurfaceView (Flutter virtual display)",
+    "detail": 6,
+    "passes": 3,
+    "warmup": true,
+    "fog": true,
+    "dataset": "dataset.cells.bin",
+    "label": "unknown Android SDK built for x86_64, Android 16 (emulator)"
+  },
+  "strategy": "holes",
+  "detail": 6,
+  "viewport_dp": [
+    411.42857142857144,
+    914.2857142857143
+  ],
+  "dpr": 2.625,
+  "build_mode": "profile",
+  "pan": {
+    "zoom": 10.0,
+    "path_fraction": 1.0,
+    "path_length_z10_tiles": 22.778724001285894,
+    "duration_s": 20
+  },
+  "data": {
+    "coverage": "db",
+    "source": "/storage/emulated/0/Android/data/com.example.footnoted.spike.render_bench/files/dataset.segcells.bin",
+    "z20_cells": 1169242,
+    "segcells_meta": {
+      "segments": 2982,
+      "rows": 9714696,
+      "level": 20,
+      "source_trace": "dataset.trace.ndjson",
+      "sha256": "22739288fc0633530a2436c0f1573de9d931984e27daceb1e0119fb09419b7c2"
+    },
+    "db": {
+      "layout": "B",
+      "cipher_version": "4.19.0 community",
+      "cipher_provider": "openssl",
+      "sqlite_version": "3.53.4",
+      "journal_mode": "wal",
+      "rows": 458360,
+      "path": "/storage/emulated/0/Android/data/com.example.footnoted.spike.render_bench/files/rb_coverage_B.db",
+      "bytes": 34840576,
+      "ensure_ms": 24,
+      "open_ms": 333,
+      "build": {
+        "reused": true,
+        "layout": "B",
+        "coverage_spans_rows": 458360,
+        "cell_stats_rows": 1169242,
+        "z20_cells": 1169242,
+        "segments": 2982,
+        "source_rows": 9714696,
+        "read_ms": 369,
+        "build_ms": 26363,
+        "db_bytes": 34840576
+      }
+    }
+  },
+  "idle_fog_update": {
+    "tiles": 20,
+    "cache_hits": 8,
+    "queried": 12,
+    "rects": 143,
+    "positions": 815,
+    "level": 16,
+    "build_ms": 0.157,
+    "query_ms": 29.114,
+    "wait_ms": 39.232,
+    "set_ms": 19.145
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "wall_ms": 20063,
+      "window_monotonic_us": [
+        38255673442,
+        38275723441
+      ],
+      "camera_moves": 780,
+      "camera_moves_skipped_busy": 157,
+      "flutter_frames": {
+        "frames": 935,
+        "span_s": 20.06,
+        "mean_fps": 46.62,
+        "median_fps": 51.18,
+        "p50_ms": 19.54,
+        "p90_ms": 33.96,
+        "p99_ms": 51.23,
+        "max_ms": 61.13,
+        "pct_over_32ms": 12.3
+      },
+      "flutter_build": {
+        "n": 936,
+        "p50_ms": 0.86,
+        "p90_ms": 2.06,
+        "max_ms": 11.61
+      },
+      "flutter_raster": {
+        "n": 936,
+        "p50_ms": 12.91,
+        "p90_ms": 24.66,
+        "max_ms": 59.21
+      },
+      "fog_updates": {
+        "n": 9,
+        "queried_tiles": 87,
+        "query": {
+          "n": 9,
+          "p50_ms": 52.01,
+          "p90_ms": 185.73,
+          "max_ms": 5007.37
+        },
+        "wait": {
+          "n": 9,
+          "p50_ms": 65.62,
+          "p90_ms": 200.66,
+          "max_ms": 5020.26
+        },
+        "build": {
+          "n": 9,
+          "p50_ms": 0.06,
+          "p90_ms": 0.26,
+          "max_ms": 0.93
+        },
+        "set": {
+          "n": 9,
+          "p50_ms": 20.04,
+          "p90_ms": 31.24,
+          "max_ms": 40.93
+        },
+        "max_rects": 247
+      }
+    },
+    {
+      "pass": 2,
+      "wall_ms": 20057,
+      "window_monotonic_us": [
+        38286756774,
+        38306790106
+      ],
+      "camera_moves": 786,
+      "camera_moves_skipped_busy": 143,
+      "flutter_frames": {
+        "frames": 927,
+        "span_s": 20.03,
+        "mean_fps": 46.28,
+        "median_fps": 48.61,
+        "p50_ms": 20.57,
+        "p90_ms": 33.34,
+        "p99_ms": 43.95,
+        "max_ms": 50.77,
+        "pct_over_32ms": 11.76
+      },
+      "flutter_build": {
+        "n": 928,
+        "p50_ms": 0.98,
+        "p90_ms": 2.46,
+        "max_ms": 13.05
+      },
+      "flutter_raster": {
+        "n": 928,
+        "p50_ms": 12.77,
+        "p90_ms": 24.53,
+        "max_ms": 48.22
+      },
+      "fog_updates": {
+        "n": 9,
+        "queried_tiles": 93,
+        "query": {
+          "n": 9,
+          "p50_ms": 36.81,
+          "p90_ms": 151.23,
+          "max_ms": 5848.11
+        },
+        "wait": {
+          "n": 9,
+          "p50_ms": 44.87,
+          "p90_ms": 159.22,
+          "max_ms": 5853.49
+        },
+        "build": {
+          "n": 9,
+          "p50_ms": 0.09,
+          "p90_ms": 0.17,
+          "max_ms": 4.49
+        },
+        "set": {
+          "n": 9,
+          "p50_ms": 19.18,
+          "p90_ms": 24.01,
+          "max_ms": 24.56
+        },
+        "max_rects": 247
+      }
+    },
+    {
+      "pass": 3,
+      "wall_ms": 20060,
+      "window_monotonic_us": [
+        38317706773,
+        38337740105
+      ],
+      "camera_moves": 804,
+      "camera_moves_skipped_busy": 146,
+      "flutter_frames": {
+        "frames": 948,
+        "span_s": 20.02,
+        "mean_fps": 47.35,
+        "median_fps": 50.57,
+        "p50_ms": 19.77,
+        "p90_ms": 33.29,
+        "p99_ms": 47.74,
+        "max_ms": 57.71,
+        "pct_over_32ms": 12.03
+      },
+      "flutter_build": {
+        "n": 949,
+        "p50_ms": 0.9,
+        "p90_ms": 2.27,
+        "max_ms": 7.48
+      },
+      "flutter_raster": {
+        "n": 949,
+        "p50_ms": 13.14,
+        "p90_ms": 24.67,
+        "max_ms": 55.05
+      },
+      "fog_updates": {
+        "n": 9,
+        "queried_tiles": 87,
+        "query": {
+          "n": 9,
+          "p50_ms": 47.21,
+          "p90_ms": 103.32,
+          "max_ms": 4866.96
+        },
+        "wait": {
+          "n": 9,
+          "p50_ms": 54.93,
+          "p90_ms": 111.5,
+          "max_ms": 4874.53
+        },
+        "build": {
+          "n": 9,
+          "p50_ms": 0.07,
+          "p90_ms": 0.1,
+          "max_ms": 0.16
+        },
+        "set": {
+          "n": 9,
+          "p50_ms": 16.08,
+          "p90_ms": 31.82,
+          "max_ms": 43.1
+        },
+        "max_rects": 247
+      }
+    }
+  ]
+}

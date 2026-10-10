@@ -1,0 +1,109 @@
+{
+  "serial": "emulator-5554",
+  "label": "unknown Android SDK built for x86_64, Android 16 (emulator)",
+  "strategy": "holes",
+  "texture": false,
+  "fog": true,
+  "zoom": 10,
+  "detail": 6,
+  "source": "db",
+  "layout": "A",
+  "refresh_period_ns": {
+    "c54504b SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#777": 16666666,
+    "8fb0679 com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity#771": 16666666,
+    "com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity#772": 16666666,
+    "c54504b SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity]#776": 16666666,
+    "dd85439 com.example.footnoted.spike.render_bench#790": 16666666
+  },
+  "gfxinfo_summary": [
+    "Total frames rendered: 0",
+    "Janky frames: 0 (0.00%)",
+    "Janky frames (legacy): 0 (0.00%)",
+    "Total frames rendered: 0",
+    "Janky frames: 0 (0.00%)",
+    "Janky frames (legacy): 0 (0.00%)",
+    "Total frames rendered: 0",
+    "Janky frames: 0 (0.00%)",
+    "Janky frames (legacy): 0 (0.00%)"
+  ],
+  "passes": {
+    "1": {
+      "surfaceflinger": {
+        "c54504b SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#777": {
+          "frames": 890,
+          "span_s": 20.0,
+          "mean_fps": 44.5,
+          "median_fps": 52.6,
+          "p50_ms": 19.01,
+          "p90_ms": 37.61,
+          "p99_ms": 56.1,
+          "max_ms": 63.01,
+          "pct_over_32ms": 20.56
+        }
+      },
+      "flutter_frames": {
+        "frames": 891,
+        "span_s": 20.02,
+        "mean_fps": 44.5,
+        "median_fps": 48.09,
+        "p50_ms": 20.8,
+        "p90_ms": 35.05,
+        "p99_ms": 51.12,
+        "max_ms": 58.25,
+        "pct_over_32ms": 14.48
+      }
+    },
+    "2": {
+      "surfaceflinger": {
+        "c54504b SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#777": {
+          "frames": 896,
+          "span_s": 20.01,
+          "mean_fps": 44.79,
+          "median_fps": 52.57,
+          "p50_ms": 19.02,
+          "p90_ms": 38.59,
+          "p99_ms": 53.24,
+          "max_ms": 66.9,
+          "pct_over_32ms": 20.31
+        }
+      },
+      "flutter_frames": {
+        "frames": 897,
+        "span_s": 20.02,
+        "mean_fps": 44.81,
+        "median_fps": 47.65,
+        "p50_ms": 20.99,
+        "p90_ms": 34.68,
+        "p99_ms": 48.34,
+        "max_ms": 62.29,
+        "pct_over_32ms": 14.27
+      }
+    },
+    "3": {
+      "surfaceflinger": {
+        "c54504b SurfaceView[com.example.footnoted.spike.render_bench/com.example.footnoted.spike.render_bench.MainActivity](BLAST)#777": {
+          "frames": 866,
+          "span_s": 20.0,
+          "mean_fps": 43.3,
+          "median_fps": 50.82,
+          "p50_ms": 19.68,
+          "p90_ms": 37.95,
+          "p99_ms": 58.83,
+          "max_ms": 64.83,
+          "pct_over_32ms": 22.06
+        }
+      },
+      "flutter_frames": {
+        "frames": 867,
+        "span_s": 20.03,
+        "mean_fps": 43.29,
+        "median_fps": 46.57,
+        "p50_ms": 21.47,
+        "p90_ms": 35.54,
+        "p99_ms": 49.31,
+        "max_ms": 61.72,
+        "pct_over_32ms": 16.26
+      }
+    }
+  }
+}

@@ -164,7 +164,9 @@ Future<void> main(List<String> argv) async {
   ], dir: bench);
   File('${out.path}/runs.md').writeAsStringSync(
     '# render_bench runs — $label, profile'
-    '${emulator ? ' — emulator — no pass/fail' : ''}\n\n$table',
+    '${emulator ? ' — emulator — no pass/fail' : ''}\n\n'
+    // `dart run` may print build-hook progress before the table.
+    '${table.substring(table.indexOf('|').clamp(0, table.length))}',
   );
   await _run(Platform.resolvedExecutable, [
     'run',

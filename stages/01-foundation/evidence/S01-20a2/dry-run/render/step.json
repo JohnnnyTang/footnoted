@@ -1,0 +1,129 @@
+{
+  "device": {
+    "serial": "emulator-5554",
+    "manufacturer": "unknown",
+    "model": "Android SDK built for x86_64",
+    "android": "16",
+    "sdk": "36",
+    "abi": "x86_64",
+    "emulator": true,
+    "utc": "2026-10-10T01:31:49.363719Z"
+  },
+  "label": "unknown Android SDK built for x86_64, Android 16 (emulator)",
+  "build_mode": "profile",
+  "started_utc": "2026-10-10T01:31:49.619127Z",
+  "git_head": "7228ae4f2370dc8cd6ed13b5e686956a0c59a360",
+  "build": {
+    "java_home": "D:/software/jdk-21.0.12.1+1",
+    "target_platform": "android-x64",
+    "seconds": 14
+  },
+  "apk_bytes": 67932020,
+  "runs": [
+    {
+      "zoom": 10,
+      "strategy": "holes",
+      "texture": false,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "inverse",
+      "texture": false,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "holes",
+      "texture": true,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "holes",
+      "texture": false,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "inverse",
+      "texture": false,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "holes",
+      "texture": true,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "holes",
+      "texture": false,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "inverse",
+      "texture": false,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "holes",
+      "texture": true,
+      "layout": "B",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 10,
+      "strategy": "holes",
+      "texture": false,
+      "layout": "A",
+      "spot": false,
+      "attempts": 1
+    },
+    {
+      "zoom": 5,
+      "strategy": "holes",
+      "texture": false,
+      "layout": "B",
+      "spot": true,
+      "attempts": 1
+    },
+    {
+      "zoom": 14,
+      "strategy": "holes",
+      "texture": false,
+      "layout": "B",
+      "spot": true,
+      "attempts": 1
+    },
+    {
+      "zoom": 18,
+      "strategy": "holes",
+      "texture": false,
+      "layout": "B",
+      "spot": true,
+      "attempts": 1
+    }
+  ],
+  "finished_utc": "2026-10-10T02:01:42.952909Z"
+}
